@@ -4,14 +4,18 @@
   "description": "Complete PR workflow from commit to production with validation",
   "author": {
     "name": "Avi Fenesh",
+    "email": "[email protected]",
     "url": "https://github.com/avifenesh"
   },
+  "homepage": "https://github.com/avifenesh/awsome-slash#ship",
   "repository": "https://github.com/avifenesh/awsome-slash",
   "license": "MIT",
   "keywords": [
     "ci-cd",
     "deployment",
     "pr-workflow",
-    "automation"
+    "automation",
+    "railway",
+    "vercel"
   ]
 }

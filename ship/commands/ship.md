@@ -243,9 +243,15 @@ fi
 if [ "$CI_PLATFORM" = "gitlab-ci" ]; then
   echo "Waiting for GitLab CI..."
 
+  # Create secure curl config to avoid token exposure in process list
+  CURL_CONFIG=$(mktemp)
+  chmod 600 "$CURL_CONFIG"
+  echo "header = \"PRIVATE-TOKEN: $GITLAB_TOKEN\"" > "$CURL_CONFIG"
+  trap "rm -f \"$CURL_CONFIG\"" EXIT
+
   # Poll pipeline status
   while true; do
-    STATUS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+    STATUS=$(curl -s -K "$CURL_CONFIG" \
       "https://gitlab.com/api/v4/projects/$PROJECT_ID/pipelines?ref=$CURRENT_BRANCH&per_page=1" \
       | jq -r '.[0].status')
 
@@ -254,11 +260,13 @@ if [ "$CI_PLATFORM" = "gitlab-ci" ]; then
       break
     elif [ "$STATUS" = "failed" ]; then
       echo "✗ CI failed"
+      rm -f "$CURL_CONFIG"
       exit 1
     fi
 
     sleep 10
   done
+  rm -f "$CURL_CONFIG"
 fi
 ```
 
@@ -774,11 +782,18 @@ if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "301" ] || [ "$HTTP_STATUS" 
 else
   echo "✗ Production health check failed: $HTTP_STATUS"
   echo "INITIATING ROLLBACK"
+  echo "WARNING: This will force push to $PROD_BRANCH to revert to previous version"
 
-  # Rollback mechanism
+  # Rollback mechanism with --force-with-lease for safety
   git checkout $PROD_BRANCH
   git reset --hard HEAD~1
-  git push --force origin $PROD_BRANCH
+  
+  # Use --force-with-lease to prevent overwriting unexpected remote changes
+  if ! git push --force-with-lease origin $PROD_BRANCH; then
+    echo "✗ Force push failed - remote may have unexpected changes"
+    echo "Manual intervention required"
+    exit 1
+  fi
 
   echo "Rolled back production to previous version"
   exit 1
@@ -796,11 +811,17 @@ fi
 if [ "$ERROR_COUNT" -gt 20 ]; then
   echo "✗ CRITICAL: High error rate in production: $ERROR_COUNT errors"
   echo "INITIATING ROLLBACK"
+  echo "WARNING: This will force push to $PROD_BRANCH to revert to previous version"
 
-  # Rollback
+  # Rollback with --force-with-lease for safety
   git checkout $PROD_BRANCH
   git reset --hard HEAD~1
-  git push --force origin $PROD_BRANCH
+  
+  if ! git push --force-with-lease origin $PROD_BRANCH; then
+    echo "✗ Force push failed - remote may have unexpected changes"
+    echo "Manual intervention required"
+    exit 1
+  fi
 
   exit 1
 else
@@ -821,10 +842,16 @@ if jq -e '.scripts["smoke-test:prod"]' package.json > /dev/null 2>&1; then
   if [ $? -ne 0 ]; then
     echo "✗ Production smoke tests failed"
     echo "INITIATING ROLLBACK"
+    echo "WARNING: This will force push to $PROD_BRANCH to revert to previous version"
 
     git checkout $PROD_BRANCH
     git reset --hard HEAD~1
-    git push --force origin $PROD_BRANCH
+    
+    if ! git push --force-with-lease origin $PROD_BRANCH; then
+      echo "✗ Force push failed - remote may have unexpected changes"
+      echo "Manual intervention required"
+      exit 1
+    fi
 
     exit 1
   fi
@@ -840,11 +867,18 @@ rollback_production() {
   echo "========================================"
   echo "ROLLBACK INITIATED"
   echo "========================================"
+  echo "WARNING: This will force push to $PROD_BRANCH to revert to previous version"
 
   # Revert production branch
   git checkout $PROD_BRANCH
   git reset --hard HEAD~1
-  git push --force origin $PROD_BRANCH
+  
+  # Use --force-with-lease to prevent overwriting unexpected remote changes
+  if ! git push --force-with-lease origin $PROD_BRANCH; then
+    echo "✗ Force push failed - remote may have unexpected changes"
+    echo "Manual intervention required"
+    exit 1
+  fi
 
   echo "✓ Rolled back production to previous deployment"
   echo "Previous version will redeploy automatically"

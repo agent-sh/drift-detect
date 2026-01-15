@@ -414,17 +414,30 @@ fi
 if [ "$CI_PLATFORM" = "gitlab-ci" ]; then
   echo "Waiting for GitLab CI..."
 
+  # Create secure temp config file for curl (avoids token in process list)
+  CURL_CONFIG=$(mktemp)
+  chmod 600 "$CURL_CONFIG"
+  echo "header = \"PRIVATE-TOKEN: $GITLAB_TOKEN\"" > "$CURL_CONFIG"
+  
+  # Cleanup function to remove config file
+  cleanup_curl_config() {
+    rm -f "$CURL_CONFIG"
+  }
+  trap cleanup_curl_config EXIT
+
   # Poll pipeline status
   while true; do
-    PIPELINE_STATUS=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+    PIPELINE_STATUS=$(curl -s -K "$CURL_CONFIG" \
       "https://gitlab.com/api/v4/projects/$PROJECT_ID/merge_requests/$PR_NUMBER/pipelines" \
       | jq -r '.[0].status')
 
     if [ "$PIPELINE_STATUS" = "success" ]; then
       echo "✓ CI passed"
+      cleanup_curl_config
       break
     elif [ "$PIPELINE_STATUS" = "failed" ]; then
       echo "✗ CI failed"
+      cleanup_curl_config
       exit 1
     fi
 

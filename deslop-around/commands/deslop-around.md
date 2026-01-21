@@ -85,6 +85,9 @@ Detect and remove:
 - **Unused Imports**: Imports marked as unused
 - **Hardcoded URLs**: URLs that should be config
 - **Debug Imports**: `import pdb`, `import ipdb`
+- **Placeholder Functions**: `return 0`, `todo!()`, `raise NotImplementedError`, `throw Error("TODO")`
+- **Excessive Documentation**: JSDoc >3x function body length
+- **Phantom References**: Issue/PR mentions, file path references in comments
 
 Reference patterns from `${CLAUDE_PLUGIN_ROOT}/lib/patterns/slop-patterns.js`
 

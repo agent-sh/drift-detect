@@ -44,19 +44,19 @@ For user-facing documentation:
 
 Check all internal links:
 
-**Patterns:**
+#### Patterns
 - Broken anchor links (`[text](#missing-anchor)`)
 - Links to non-existent files
 - Malformed link syntax
 
 ### 2. Structure Validation (HIGH Certainty)
 
-**Required Elements:**
+#### Required Elements
 - Consistent heading hierarchy (no H1 -> H3 jumps)
 - Code blocks with language specification
 - Reasonable section lengths
 
-**Pattern Checks:**
+#### Pattern Checks
 ```javascript
 // Inconsistent headings
 const levels = content.match(/^#{1,6}\s+/gm);
@@ -68,13 +68,13 @@ const unlabeledCode = content.match(/```\s*\n/g);
 
 ### 3. Token Efficiency (HIGH - AI Mode Only)
 
-**Unnecessary Prose:**
+#### Unnecessary Prose
 - "In this document..."
 - "As you can see..."
 - "Let's explore..."
 - "Please note that..."
 
-**Verbose Phrases:**
+#### Verbose Phrases
 - "in order to" -> "to"
 - "due to the fact that" -> "because"
 - "has the ability to" -> "can"
@@ -82,28 +82,28 @@ const unlabeledCode = content.match(/```\s*\n/g);
 
 ### 4. RAG Optimization (MEDIUM - AI Mode Only)
 
-**Suboptimal Chunking:**
+#### Suboptimal Chunking
 - Sections too long (>1000 tokens)
 - Sections too short (<20 tokens)
 - Inconsistent section sizes
 
-**Poor Semantic Boundaries:**
+#### Poor Semantic Boundaries
 - Multiple topics in single section
 - Topic transitions without new headers
 - Mixed concepts in one chunk
 
-**Missing Context Anchors:**
+#### Missing Context Anchors
 - Sections starting with "It", "This", "They"
 - Dangling references to previous content
 - Context-dependent openings
 
 ### 5. Balance Suggestions (MEDIUM - Both Mode)
 
-**Missing Section Headers:**
+#### Missing Section Headers
 - Long content blocks without structure
 - Dense paragraphs without navigation
 
-**Poor Context Ordering:**
+#### Poor Context Ordering
 - Important information buried late
 - Critical warnings/requirements at end
 
@@ -205,28 +205,34 @@ For HIGH certainty issues with available fixes:
 <examples>
 ### Example: Verbose Phrase Detection
 
-**Before (flagged):**
+<bad_example>
 ```markdown
 In order to configure the plugin, you need to...
 Due to the fact that the API requires authentication...
 ```
+**Why it's bad**: Verbose phrases waste tokens without adding meaning.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```markdown
 To configure the plugin...
 Because the API requires authentication...
 ```
+**Why it's good**: Direct language reduces token count while maintaining clarity.
+</good_example>
 
 ### Example: RAG Chunking Issue
 
-**Before (flagged - section too long):**
+<bad_example>
 ```markdown
 ## Installation
 [2000+ tokens of mixed content about installation,
 configuration, troubleshooting, and examples]
 ```
+**Why it's bad**: Long mixed sections create poor retrieval boundaries and confuse semantic search.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```markdown
 ## Installation
 [500 tokens - just installation steps]
@@ -237,6 +243,8 @@ configuration, troubleshooting, and examples]
 ## Troubleshooting
 [300 tokens - common issues]
 ```
+**Why it's good**: Single-topic sections create clear chunk boundaries for RAG retrieval.
+</good_example>
 </examples>
 
 ## Pattern Details

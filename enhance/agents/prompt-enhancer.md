@@ -42,79 +42,79 @@ Use `/enhance:agent` for agent prompt files with frontmatter.
 
 ### 1. Clarity (HIGH Certainty)
 
-**Vague Instructions:**
+#### Vague Instructions
 - "usually", "sometimes", "often"
 - "try to", "if possible", "when appropriate"
 - Fuzzy language that reduces determinism
 
-**Negative-Only Constraints:**
+#### Negative-Only Constraints
 - "don't", "never", "avoid" without stating what TO do
 - Missing positive alternatives
 
-**Aggressive Emphasis:**
+#### Aggressive Emphasis
 - Excessive CAPS (CRITICAL, IMPORTANT)
 - Multiple exclamation marks (!!)
 - "MUST ALWAYS", "ABSOLUTELY" patterns
 
 ### 2. Structure (HIGH/MEDIUM Certainty)
 
-**Missing XML Structure:**
+#### Missing XML Structure
 - Complex prompts without XML tags
 - Prompts >800 tokens or 6+ sections need structure
 
-**Inconsistent Sections:**
-- Mixed heading styles (## and **bold**)
+#### Inconsistent Sections
+- Mixed heading styles (## and #### sub-headings)
 - Skipped heading levels (H1 to H3)
 
-**Critical Info Buried:**
+#### Critical Info Buried
 - Important instructions in middle 40% of prompt
 - Lost-in-the-middle effect
 
 ### 3. Examples (HIGH/MEDIUM Certainty)
 
-**Missing Examples:**
+#### Missing Examples
 - Complex prompts without few-shot examples
 - Format requests without example output
 
-**Suboptimal Example Count:**
+#### Suboptimal Example Count
 - Only 1 example (optimal: 2-5)
 - More than 7 examples (token bloat)
 
-**Missing Contrast:**
+#### Missing Contrast
 - Multiple examples without good/bad labeling
 - No pattern demonstration
 
 ### 4. Context (MEDIUM Certainty)
 
-**Missing Context/WHY:**
+#### Missing Context/WHY
 - Many rules without explanation
 - Instructions without motivation
 
-**Missing Priority:**
+#### Missing Priority
 - Multiple constraint sections
 - No conflict resolution order
 
 ### 5. Output Format (MEDIUM/HIGH Certainty)
 
-**Missing Output Format:**
+#### Missing Output Format
 - Substantial prompts without format specification
 - No response structure guidance
 
-**JSON Without Schema:**
+#### JSON Without Schema
 - Requests JSON output
 - No schema or example provided
 
 ### 6. Anti-Patterns (HIGH/MEDIUM/LOW Certainty)
 
-**Redundant CoT:**
+#### Redundant CoT
 - "Think step by step" with modern models
 - Explicit reasoning instructions for thinking models
 
-**Overly Prescriptive:**
+#### Overly Prescriptive
 - 10+ numbered steps
 - Micro-managing reasoning process
 
-**Prompt Bloat:**
+#### Prompt Bloat
 - Over 2500 tokens
 - Consider splitting or XML compression
 
@@ -217,31 +217,37 @@ For HIGH certainty issues with available fixes:
 <examples>
 ### Example: Vague Instructions Detection
 
-**Before (flagged):**
+<bad_example>
 ```markdown
 You should usually follow best practices when possible.
 Sometimes you might need to handle edge cases.
 Try to be helpful as much as possible.
 ```
+**Why it's bad**: Vague qualifiers ("usually", "sometimes", "try to") reduce determinism.
+</bad_example>
 
-**After (improved):**
+<good_example>
 ```markdown
 Follow these specific practices:
 1. Validate input before processing
 2. Handle null/undefined explicitly
 3. Return structured error messages for failures
 ```
+**Why it's good**: Specific, actionable instructions with clear requirements.
+</good_example>
 
 ### Example: Missing Examples Detection
 
-**Before (flagged):**
+<bad_example>
 ```markdown
 ## Output Format
 
 Respond with a JSON object containing the analysis results.
 ```
+**Why it's bad**: Requests structured output without showing the expected format.
+</bad_example>
 
-**After (improved):**
+<good_example>
 ```markdown
 ## Output Format
 
@@ -265,24 +271,30 @@ Respond with a JSON object:
 }
 ```
 ```
+**Why it's good**: Concrete example shows exact structure expected.
+</good_example>
 
 ### Example: Negative-Only Constraints
 
-**Before (flagged):**
+<bad_example>
 ```markdown
 - Don't use vague language
 - Never skip validation
 - Avoid hardcoded values
 - Do not output raw errors
 ```
+**Why it's bad**: Only states what NOT to do, without positive alternatives.
+</bad_example>
 
-**After (improved):**
+<good_example>
 ```markdown
 - Use specific, deterministic language instead of vague terms
 - Always validate input; return structured errors for invalid data
 - Use configuration or environment variables instead of hardcoded values
 - Wrap errors with context: {error: message, code: TYPE}
 ```
+**Why it's good**: Each constraint includes what TO do instead.
+</good_example>
 </examples>
 
 ## Pattern Details

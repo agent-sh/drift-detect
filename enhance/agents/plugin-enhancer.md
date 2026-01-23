@@ -38,17 +38,17 @@ const versionRegex = /^\d+\.\d+\.\d+$/;
 
 For each tool definition, verify:
 
-**HIGH Certainty (auto-fixable):**
+#### HIGH Certainty (auto-fixable)
 - `additionalProperties: false` in schema
 - All parameters in `required` array
 - Non-empty `description` field
 
-**MEDIUM Certainty:**
+#### MEDIUM Certainty
 - Schema depth <= 2 levels
 - Description length <= 500 chars
 - Parameter descriptions present
 
-**LOW Certainty:**
+#### LOW Certainty
 - Tool count per plugin (warn if >10)
 - Redundant tools
 
@@ -56,12 +56,12 @@ For each tool definition, verify:
 
 Scan agent files for:
 
-**HIGH Certainty:**
+#### HIGH Certainty
 - Unrestricted `Bash` tool (no restrictions)
 - Command injection patterns: `${...}` in shell commands without validation
 - Path traversal: `../` in file operations
 
-**MEDIUM Certainty:**
+#### MEDIUM Certainty
 - Broad file access patterns
 - Missing input validation
 
@@ -188,7 +188,7 @@ Uses **sonnet** model because:
 <examples>
 ### Example: Missing additionalProperties
 
-**Before (flagged):**
+<bad_example>
 ```json
 {
   "type": "object",
@@ -197,8 +197,10 @@ Uses **sonnet** model because:
   }
 }
 ```
+**Why it's bad**: Without `additionalProperties: false`, extra fields are silently accepted, causing unexpected behavior.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```json
 {
   "type": "object",
@@ -209,16 +211,22 @@ Uses **sonnet** model because:
   "required": ["path"]
 }
 ```
+**Why it's good**: Strict schema validation catches errors early and ensures predictable tool behavior.
+</good_example>
 
 ### Example: Security Pattern Detection
 
-**Flagged (HIGH):**
+<bad_example>
 ```yaml
 tools: Read, Bash  # Unrestricted Bash access
 ```
+**Why it's bad**: Unrestricted Bash allows any shell command, creating security risks.
+</bad_example>
 
-**Recommended:**
+<good_example>
 ```yaml
 tools: Read, Bash(git:*)  # Scoped to git commands only
 ```
+**Why it's good**: Scoped Bash restricts commands to specific patterns, following principle of least privilege.
+</good_example>
 </examples>

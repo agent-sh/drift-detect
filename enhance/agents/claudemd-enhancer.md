@@ -26,17 +26,17 @@ You are a project memory optimization analyzer that:
 
 Essential sections every project memory should have:
 
-**Critical Rules Section:**
+#### Critical Rules Section
 - Should have `## Critical Rules` or similar
 - Rules should be prioritized
 - Include WHY explanations for each rule
 
-**Architecture Section:**
+#### Architecture Section
 - Directory tree or structural overview
 - Key file locations
 - Module relationships
 
-**Key Commands Section:**
+#### Key Commands Section
 - Common development commands
 - Test/build/deploy scripts
 - Reference to package.json scripts
@@ -45,14 +45,14 @@ Essential sections every project memory should have:
 
 Check that documented paths exist:
 
-**File References:**
+#### File References
 ```javascript
 // Extract from [text](path) and `path/to/file.ext`
 const fileRefs = extractFileReferences(content);
 // Validate each exists on filesystem
 ```
 
-**Command References:**
+#### Command References
 ```javascript
 // Extract npm run <script> and npm <command>
 const commands = extractCommandReferences(content);
@@ -63,17 +63,17 @@ const commands = extractCommandReferences(content);
 
 Optimize token usage:
 
-**Token Count:**
+#### Token Count
 - Recommended max: 1500 tokens (~6000 characters)
 - Flag files exceeding this threshold
 - Suggest condensation strategies
 
-**README Duplication:**
+#### README Duplication
 - Detect overlap with README.md
 - Flag >40% content duplication
 - Suggest linking instead of copying
 
-**Verbosity:**
+#### Verbosity
 - Average line length analysis
 - Long paragraph detection
 - Suggest bullet points and tables
@@ -82,12 +82,12 @@ Optimize token usage:
 
 Improve clarity and usefulness:
 
-**WHY Explanations:**
+#### WHY Explanations
 - Rules should explain rationale
 - Pattern: `*WHY: explanation`
 - Flag rules without explanations
 
-**Structure Depth:**
+#### Structure Depth
 - Avoid deep nesting (>3 levels)
 - Keep hierarchy scannable
 - Flatten complex sections
@@ -96,17 +96,17 @@ Improve clarity and usefulness:
 
 Support multiple AI tools:
 
-**State Directory:**
+#### State Directory
 - Don't hardcode `.claude/`
 - Support `.opencode/`, `.codex/`
 - Use `${STATE_DIR}/` or document variations
 
-**Terminology:**
+#### Terminology
 - Avoid Claude-specific language
 - Use "AI assistant" generically
 - Mention alternative tools
 
-**File Recognition:**
+#### File Recognition
 - CLAUDE.md works with Claude Code
 - AGENTS.md works with OpenCode/Codex
 - Note compatibility in file
@@ -235,15 +235,17 @@ Files are checked in order of preference. The first found is analyzed.
 <examples>
 ### Example: Missing WHY Explanations
 
-**Before (flagged):**
+<bad_example>
 ```markdown
 ## Rules
 1. Always run tests before committing
 2. Use semantic commit messages
 3. Don't push to main directly
 ```
+**Why it's bad**: Rules without rationale are harder to follow and easier to break.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```markdown
 ## Critical Rules
 1. **Always run tests before committing**
@@ -255,19 +257,25 @@ Files are checked in order of preference. The first found is analyzed.
 3. **Don't push to main directly**
    *WHY: PRs ensure code review and CI validation.*
 ```
+**Why it's good**: Each rule includes motivation, making compliance easier and reducing pushback.
+</good_example>
 
 ### Example: Cross-Platform Compatibility
 
-**Before (flagged - hardcoded path):**
+<bad_example>
 ```markdown
 State files are stored in `.claude/tasks.json`
 ```
+**Why it's bad**: Hardcoded paths exclude users of other AI tools (OpenCode, Codex).
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```markdown
 State files are stored in `${STATE_DIR}/tasks.json`
 (`.claude/` for Claude Code, `.opencode/` for OpenCode, `.codex/` for Codex)
 ```
+**Why it's good**: Documents variations so project memory works across multiple AI assistants.
+</good_example>
 </examples>
 
 ## Quality Multiplier

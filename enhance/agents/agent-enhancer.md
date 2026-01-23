@@ -25,7 +25,7 @@ You are a prompt optimization analyzer that:
 
 Check each agent markdown file:
 
-**Required Elements:**
+#### Required Elements
 - YAML frontmatter with `---` delimiters
 - `name` field in frontmatter
 - `description` field in frontmatter
@@ -33,7 +33,7 @@ Check each agent markdown file:
 - Output format specification
 - Constraints section
 
-**Pattern Checks:**
+#### Pattern Checks
 ```javascript
 // Missing frontmatter
 const hasFrontmatter = content.trim().startsWith('---');
@@ -52,12 +52,12 @@ const hasConstraints = /##\s+constraints/i.test(content);
 
 Verify tool restrictions in frontmatter:
 
-**HIGH Certainty Issues:**
+#### HIGH Certainty Issues
 - No `tools` field: agent has unrestricted access to ALL tools
 - `Bash` without scope: should be `Bash(git:*)` or specific restriction
 - Overly broad tool access when narrow scope would work
 
-**Fix Examples:**
+#### Fix Examples
 ```yaml
 # Bad
 tools: Read, Bash
@@ -70,12 +70,12 @@ tools: Read, Bash(git:*)
 
 Complex prompts benefit from XML tags:
 
-**When to suggest XML:**
+#### When to Suggest XML
 - 5+ sections in the prompt
 - Both lists AND code blocks present
 - Multiple distinct phases or steps
 
-**XML Benefits:**
+#### XML Benefits
 ```markdown
 <rules>
 - Clear rule 1
@@ -93,12 +93,12 @@ Complex prompts benefit from XML tags:
 
 Evaluate if CoT matches task complexity:
 
-**Unnecessary CoT:**
+#### Unnecessary CoT
 - Simple, straightforward tasks (< 500 words, < 4 sections)
 - Single-step operations
 - Already has step-by-step but task doesn't need it
 
-**Missing CoT:**
+#### Missing CoT
 - Complex analysis tasks (> 1000 words, 5+ sections)
 - Multi-step reasoning required
 - Keywords: "analyze", "evaluate", "assess", "review"
@@ -107,19 +107,19 @@ Evaluate if CoT matches task complexity:
 
 Optimal example count: 2-5
 
-**Why:**
-- < 2: insufficient for pattern recognition
-- > 5: token bloat, diminishing returns
+#### Why This Matters
+- < 2 examples: insufficient for pattern recognition
+- > 5 examples: token bloat, diminishing returns
 
 ### 6. Anti-Patterns (MEDIUM/LOW Certainty)
 
 <vague-language-patterns>
-**Vague Instructions (MEDIUM):**
+#### Vague Instructions (MEDIUM)
 - Fuzzy qualifiers: `usually`, `sometimes`, `often`, `try to`, `if possible`
 - Replace with definitive: `always`, `never`, `must`, `will`
 </vague-language-patterns>
 
-**Prompt Bloat (LOW):**
+#### Prompt Bloat (LOW)
 - Estimated token count > 2000 (rough: length / 4)
 - Redundant sections
 - Over-explanation
@@ -266,7 +266,7 @@ For HIGH certainty issues with available fixes:
 <examples>
 ### Example: Unrestricted Bash Access
 
-**Before (flagged - HIGH):**
+<bad_example>
 ```yaml
 ---
 name: my-agent
@@ -274,8 +274,10 @@ description: Does something
 tools: Read, Bash
 ---
 ```
+**Why it's bad**: Unrestricted Bash allows any shell command, creating security risks.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```yaml
 ---
 name: my-agent
@@ -283,18 +285,22 @@ description: Does something
 tools: Read, Bash(git:*)
 ---
 ```
+**Why it's good**: Bash restricted to git commands only, following principle of least privilege.
+</good_example>
 
 ### Example: Missing Role Section
 
-**Before (flagged - HIGH):**
+<bad_example>
 ```markdown
 # My Agent
 
 ## What It Does
 This agent processes files...
 ```
+**Why it's bad**: No clear role definition; model lacks context for its identity and purpose.
+</bad_example>
 
-**After (fixed):**
+<good_example>
 ```markdown
 # My Agent
 
@@ -305,6 +311,8 @@ You are a file processing agent that analyzes and transforms data files.
 ## What It Does
 This agent processes files...
 ```
+**Why it's good**: Clear role establishes agent identity and guides behavior.
+</good_example>
 </examples>
 
 ## Integration Points

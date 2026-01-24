@@ -34,7 +34,7 @@ Before planning, you should have:
 ## Phase 1: Load Context
 
 ```javascript
-const workflowState = require('${CLAUDE_PLUGIN_ROOT}/lib/state/workflow-state.js');
+const workflowState = require('${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/') + '/lib/state/workflow-state.js');
 const state = workflowState.readFlow();
 
 const task = state.task;

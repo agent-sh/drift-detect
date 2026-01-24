@@ -46,7 +46,7 @@ Parse from $ARGUMENTS:
 ```javascript
 const args = '$ARGUMENTS'.split(' ');
 const stateIdx = args.indexOf('--state-file');
-const workflowState = stateIdx >= 0 ? require('${CLAUDE_PLUGIN_ROOT}/lib/state/workflow-state.js') : null;
+const workflowState = stateIdx >= 0 ? require('${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/') + '/lib/state/workflow-state.js') : null;
 
 function updatePhase(phase, result) {
   if (!workflowState) return;

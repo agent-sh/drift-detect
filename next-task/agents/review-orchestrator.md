@@ -14,7 +14,7 @@ and iterate until all critical and high-severity issues are resolved.
 
 ```javascript
 // No max iterations - review until approved
-const workflowState = require('${CLAUDE_PLUGIN_ROOT}/lib/state/workflow-state.js');
+const workflowState = require('${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/') + '/lib/state/workflow-state.js');
 ```
 
 

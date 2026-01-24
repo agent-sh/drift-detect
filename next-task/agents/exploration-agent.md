@@ -13,7 +13,7 @@ This requires careful investigation and connecting disparate pieces of informati
 ## Phase 1: Load Task Context
 
 ```javascript
-const workflowState = require('${CLAUDE_PLUGIN_ROOT}/lib/state/workflow-state.js');
+const workflowState = require('${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/') + '/lib/state/workflow-state.js');
 const state = workflowState.readState();
 
 const task = state.task;

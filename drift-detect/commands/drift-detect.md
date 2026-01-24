@@ -32,7 +32,9 @@ Example: `/drift-detect --sources github,docs --depth quick --output file`
 ## Phase 1: Parse Arguments and Collect Data
 
 ```javascript
-const collectors = require('${CLAUDE_PLUGIN_ROOT}/lib/drift-detect/collectors.js');
+// Normalize path for Windows (backslashes break in require strings)
+const pluginPath = '${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/');
+const collectors = require(`${pluginPath}/lib/drift-detect/collectors.js`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);

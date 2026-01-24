@@ -340,6 +340,17 @@ function createAgentPrompt(config) {
 }
 
 /**
+ * Convert a path to forward slashes (safe for require() on all platforms)
+ * Windows paths with backslashes break in require() strings
+ *
+ * @param {string} p - Path to normalize
+ * @returns {string} Path with forward slashes
+ */
+function normalizePathForRequire(p) {
+  return p.replace(/\\/g, '/');
+}
+
+/**
  * Platform-specific configuration helpers
  */
 
@@ -444,5 +455,8 @@ module.exports = {
   getOpenCodeConfig,
   getCodexConfig,
   getInstructionFiles,
-  INSTRUCTION_FILES
+  INSTRUCTION_FILES,
+
+  // Path normalization
+  normalizePathForRequire
 };

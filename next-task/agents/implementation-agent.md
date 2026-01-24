@@ -44,7 +44,7 @@ Before implementation:
 ## Phase 1: Load Approved Plan
 
 ```javascript
-const workflowState = require('${CLAUDE_PLUGIN_ROOT}/lib/state/workflow-state.js');
+const workflowState = require('${CLAUDE_PLUGIN_ROOT}'.replace(/\\/g, '/') + '/lib/state/workflow-state.js');
 const state = workflowState.readFlow();
 
 if (!state.plan?.approved) {

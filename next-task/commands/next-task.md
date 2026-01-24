@@ -8,19 +8,6 @@ allowed-tools: Bash(git:*), Bash(gh:*), Bash(npm:*), Bash(node:*), Read, Write, 
 
 Discover what to work on next and execute the complete implementation workflow.
 
-## Initial Setup (Run First)
-
-Before anything else, ensure the state directory exists:
-
-```bash
-# Create state directory if it doesn't exist
-# Uses AI_STATE_DIR env var, defaults to .claude
-STATE_DIR="${AI_STATE_DIR:-.claude}"
-mkdir -p "$STATE_DIR"
-```
-
-This creates `.claude/` (Claude Code), `.opencode/` (OpenCode), or `.codex/` (Codex) based on platform.
-
 ## Default Behavior (No Arguments)
 
 **When you run `/next-task` with NO arguments**:

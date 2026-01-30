@@ -72,23 +72,21 @@ Each created issue includes:
 ## Security Issue Handling
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║  ⚠️ SECURITY ISSUES MUST NOT BE PUBLIC                          ║
-╠══════════════════════════════════════════════════════════════════╣
-║                                                                  ║
-║  The following must NOT be created as GitHub issues:             ║
-║  - Token/credential exposure                                    ║
-║  - Authentication vulnerabilities                               ║
-║  - Authorization bypasses                                       ║
-║  - Injection vulnerabilities                                    ║
-║  - Any exploitable security finding                             ║
-║                                                                  ║
-║  For security issues:                                           ║
-║  1. Fix immediately if possible                                 ║
-║  2. Keep documented internally only                             ║
-║  3. Note in completion report (no details)                      ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
+
+  ⚠️ SECURITY ISSUES MUST NOT BE PUBLIC
+
+  The following must NOT be created as GitHub issues:
+  - Token/credential exposure
+  - Authentication vulnerabilities
+  - Authorization bypasses
+  - Injection vulnerabilities
+  - Any exploitable security finding
+
+  For security issues:
+  1. Fix immediately if possible
+  2. Keep documented internally only
+  3. Note in completion report (no details)
+
 ```
 
 ## TECHNICAL_DEBT.md Cleanup

@@ -368,11 +368,11 @@ This agent is called:
 ### What This Agent MUST NOT Do
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
-║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
-║  [CRITICAL] DO NOT MERGE ANYTHING                                        ║
-╚══════════════════════════════════════════════════════════════════╝
+
+  [CRITICAL] DO NOT CREATE A PULL REQUEST
+  [CRITICAL] DO NOT PUSH TO REMOTE
+  [CRITICAL] DO NOT MERGE ANYTHING
+
 ```
 
 ### Required Workflow Position
@@ -405,26 +405,24 @@ When docs update is complete, you MUST:
 5. **EXPLICITLY INVOKE /ship** - DO NOT rely on hooks alone
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                    MANDATORY: INVOKE /ship EXPLICITLY                     ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  After completing docs update, you MUST call:                            ║
-║                                                                          ║
-║    await Skill({ skill: "ship:ship",                                     ║
-║                  args: "--state-file ${STATE_DIR}/workflow-status.json" });   ║
-║                                                                          ║
-║  /ship will handle:                                                      ║
-║  - PR creation and push                                                  ║
-║  - CI monitoring                                                         ║
-║  - Review comment monitoring                                             ║
-║  - Merge                                                                 ║
-║  - Worktree cleanup                                                      ║
-║  - tasks.json registry cleanup                                           ║
-║                                                                          ║
-║  DO NOT skip this step. DO NOT rely on SubagentStop hooks alone.         ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                    MANDATORY: INVOKE /ship EXPLICITLY
+
+  After completing docs update, you MUST call:
+
+    await Skill({ skill: "ship:ship",
+                  args: "--state-file ${STATE_DIR}/workflow-status.json" });
+
+  /ship will handle:
+  - PR creation and push
+  - CI monitoring
+  - Review comment monitoring
+  - Merge
+  - Worktree cleanup
+  - tasks.json registry cleanup
+
+  DO NOT skip this step. DO NOT rely on SubagentStop hooks alone.
+
 ```
 
 ## Output Format (with Handoff)

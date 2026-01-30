@@ -313,31 +313,29 @@ Proceeding to exploration phase...
 ## ⚠️ WORKTREE CLEANUP RESPONSIBILITIES
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                    WORKTREE CLEANUP - WHO DOES WHAT                       ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  THIS AGENT (worktree-manager):                                          ║
-║  ✓ Creates worktrees                                                     ║
-║  ✓ Claims tasks in tasks.json registry                                   ║
-║  ✓ Creates workflow-status.json in worktree                              ║
-║  ✗ Does NOT clean up worktrees after completion                          ║
-║                                                                          ║
-║  /ship COMMAND:                                                          ║
-║  ✓ Cleans up worktree after successful merge                             ║
-║  ✓ Removes task from tasks.json registry                                 ║
-║  ✓ Prunes worktree references                                            ║
-║                                                                          ║
-║  --abort FLAG:                                                           ║
-║  ✓ Cleans up worktree on workflow abort                                  ║
-║  ✓ Removes task from tasks.json registry                                 ║
-║                                                                          ║
-║  AGENTS MUST NOT:                                                        ║
-║  [CRITICAL] Clean up worktrees themselves                                        ║
-║  [CRITICAL] Remove tasks from registry                                           ║
-║  [CRITICAL] Delete branches                                                      ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                    WORKTREE CLEANUP - WHO DOES WHAT
+
+  THIS AGENT (worktree-manager):
+  ✓ Creates worktrees
+  ✓ Claims tasks in tasks.json registry
+  ✓ Creates workflow-status.json in worktree
+  ✗ Does NOT clean up worktrees after completion
+
+  /ship COMMAND:
+  ✓ Cleans up worktree after successful merge
+  ✓ Removes task from tasks.json registry
+  ✓ Prunes worktree references
+
+  --abort FLAG:
+  ✓ Cleans up worktree on workflow abort
+  ✓ Removes task from tasks.json registry
+
+  AGENTS MUST NOT:
+  [CRITICAL] Clean up worktrees themselves
+  [CRITICAL] Remove tasks from registry
+  [CRITICAL] Delete branches
+
 ```
 
 ## Cleanup Function (Used by /ship and --abort ONLY)

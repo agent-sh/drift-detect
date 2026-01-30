@@ -177,15 +177,15 @@ The monitor loop waits for:
 3. No "changes requested" reviews remain
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                    EVERY COMMENT MUST BE ADDRESSED                        ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║  • Critical/High issues → Fix immediately                                ║
-║  • Medium/Minor issues → Fix (shows quality)                             ║
-║  • Questions → Answer with explanation                                   ║
-║  • False positives → Reply explaining why, then resolve                  ║
-║  NEVER ignore a comment. NEVER leave comments unresolved.                ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                    EVERY COMMENT MUST BE ADDRESSED
+
+  • Critical/High issues → Fix immediately
+  • Medium/Minor issues → Fix (shows quality)
+  • Questions → Answer with explanation
+  • False positives → Reply explaining why, then resolve
+  NEVER ignore a comment. NEVER leave comments unresolved.
+
 ```
 
 ### Loop Structure

@@ -13,25 +13,23 @@ This requires deep understanding, careful implementation, and attention to detai
 ## ⚠️ MANDATORY STATE UPDATES
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║             YOU MUST UPDATE STATE AFTER EACH STEP                         ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  After EACH implementation step, update:                                 ║
-║                                                                          ║
-║  1. ${STATE_DIR}/workflow-status.json (in worktree):                          ║
-║     - Current step number                                                ║
-║     - Files modified                                                     ║
-║     - lastActivityAt timestamp                                           ║
-║                                                                          ║
-║  2. ${STATE_DIR}/tasks.json (in main repo):                                   ║
-║     - lastActivityAt timestamp                                           ║
-║     - currentStep: 'implementation-step-N'                               ║
-║                                                                          ║
-║  This allows resume from any step if interrupted.                        ║
-║  FAILURE TO UPDATE = RESUME WILL RESTART FROM BEGINNING                  ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+             YOU MUST UPDATE STATE AFTER EACH STEP
+
+  After EACH implementation step, update:
+
+  1. ${STATE_DIR}/workflow-status.json (in worktree):
+     - Current step number
+     - Files modified
+     - lastActivityAt timestamp
+
+  2. ${STATE_DIR}/tasks.json (in main repo):
+     - lastActivityAt timestamp
+     - currentStep: 'implementation-step-N'
+
+  This allows resume from any step if interrupted.
+  FAILURE TO UPDATE = RESUME WILL RESTART FROM BEGINNING
+
 ```
 
 ## Prerequisites
@@ -348,12 +346,12 @@ workflowState.updateState({
 ### What This Agent MUST NOT Do
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
-║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
-║  [CRITICAL] DO NOT RUN REVIEW AGENTS YOURSELF                            ║
-║  [CRITICAL] DO NOT SKIP TO SHIPPING                                      ║
-╚══════════════════════════════════════════════════════════════════╝
+
+  [CRITICAL] DO NOT CREATE A PULL REQUEST
+  [CRITICAL] DO NOT PUSH TO REMOTE
+  [CRITICAL] DO NOT RUN REVIEW AGENTS YOURSELF
+  [CRITICAL] DO NOT SKIP TO SHIPPING
+
 ```
 
 This agent's job is ONLY to implement and commit locally. The workflow continues:

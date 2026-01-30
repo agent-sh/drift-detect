@@ -75,34 +75,30 @@ Implementation → Pre-Review Gates → Review Loop → Delivery Validation
 ## [CRITICAL] WORKFLOW ENFORCEMENT - CRITICAL
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                         MANDATORY WORKFLOW GATES                          ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  Each phase MUST complete and approve before the next can start:         ║
-║                                                                          ║
-║  1. implementation-agent completes                                       ║
-║           ↓ MUST trigger                                                 ║
-║  2. deslop-work + test-coverage-checker (parallel)                       ║
-║           ↓ MUST trigger                                                 ║
-║  3. Phase 9 review loop (MUST approve - no open issues or override)      ║
-║           ↓ MUST trigger (only if approved)                              ║
-║  4. delivery-validator (MUST approve - tests pass, build passes)         ║
-║           ↓ MUST trigger (only if approved)                              ║
-║  5. docs-updater                                                         ║
-║           ↓ MUST EXPLICITLY invoke /ship (NOT rely on hooks alone)       ║
-║  6. /ship command (creates PR, monitors CI, merges, CLEANS UP)           ║
-║                                                                          ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  [CRITICAL] NO AGENT may create a PR - only /ship creates PRs                    ║
-║  [CRITICAL] NO AGENT may push to remote - only /ship pushes                      ║
-║  [CRITICAL] NO AGENT may skip the Phase 9 review loop                            ║
-║  [CRITICAL] NO AGENT may skip the delivery-validator                             ║
-║  [CRITICAL] NO AGENT may skip the docs-updater                                   ║
-║  [CRITICAL] NO AGENT may skip workflow-status.json updates after each phase      ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                         MANDATORY WORKFLOW GATES
+
+  Each phase MUST complete and approve before the next can start:
+
+  1. implementation-agent completes
+           ↓ MUST trigger
+  2. deslop-work + test-coverage-checker (parallel)
+           ↓ MUST trigger
+  3. Phase 9 review loop (MUST approve - no open issues or override)
+           ↓ MUST trigger (only if approved)
+  4. delivery-validator (MUST approve - tests pass, build passes)
+           ↓ MUST trigger (only if approved)
+  5. docs-updater
+           ↓ MUST EXPLICITLY invoke /ship (NOT rely on hooks alone)
+  6. /ship command (creates PR, monitors CI, merges, CLEANS UP)
+
+  [CRITICAL] NO AGENT may create a PR - only /ship creates PRs
+  [CRITICAL] NO AGENT may push to remote - only /ship pushes
+  [CRITICAL] NO AGENT may skip the Phase 9 review loop
+  [CRITICAL] NO AGENT may skip the delivery-validator
+  [CRITICAL] NO AGENT may skip the docs-updater
+  [CRITICAL] NO AGENT may skip workflow-status.json updates after each phase
+
 ```
 
 ## Review Decision Gate (Blocked/Resume)
@@ -148,24 +144,22 @@ workflowState.updateFlow({
 ## ⚠️ MANDATORY STATE UPDATES - EVERY AGENT
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                    EVERY AGENT MUST UPDATE STATE                          ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  After EACH phase completion, agents MUST:                               ║
-║                                                                          ║
-║  1. Update .claude/workflow-status.json in the WORKTREE with:            ║
-║     - Current step name and status                                       ║
-║     - Timestamp of completion                                            ║
-║     - Any relevant result data                                           ║
-║                                                                          ║
-║  2. Update .claude/tasks.json in the MAIN REPO with:                     ║
-║     - lastActivityAt timestamp                                           ║
-║     - Current status                                                     ║
-║                                                                          ║
-║  FAILURE TO UPDATE STATE = WORKFLOW CANNOT RESUME                        ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                    EVERY AGENT MUST UPDATE STATE
+
+  After EACH phase completion, agents MUST:
+
+  1. Update .claude/workflow-status.json in the WORKTREE with:
+     - Current step name and status
+     - Timestamp of completion
+     - Any relevant result data
+
+  2. Update .claude/tasks.json in the MAIN REPO with:
+     - lastActivityAt timestamp
+     - Current status
+
+  FAILURE TO UPDATE STATE = WORKFLOW CANNOT RESUME
+
 ```
 
 ### State Update Code (Use in EVERY agent)
@@ -243,69 +237,65 @@ Parse from $ARGUMENTS:
 ### ⚠️ EXISTING SESSION vs STALE SESSION - IMPORTANT
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║              UNDERSTANDING "EXISTING SESSION" SEMANTICS                   ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  "Existing session" means AN ACTIVE AGENT IS CURRENTLY RUNNING:          ║
-║                                                                          ║
-║  ✓ An agent is in the middle of processing                               ║
-║  ✓ The workflow was interrupted (context limit, crash, user cancel)      ║
-║  ✓ workflow-status.json shows recent lastActivityAt (< 1 hour)           ║
-║                                                                          ║
-║  This is DIFFERENT from a "stale session":                               ║
-║                                                                          ║
-║  ✗ Worktree exists but no agent is running                               ║
-║  ✗ lastActivityAt is old (> 24 hours)                                    ║
-║  ✗ User abandoned the task without cleanup                               ║
-║                                                                          ║
-║  BEHAVIOR:                                                               ║
-║  - Existing session: --resume continues from last checkpoint             ║
-║  - Stale session: Ask user - resume or abort/cleanup?                    ║
-║  - No session: Start fresh workflow                                      ║
-║                                                                          ║
-║  CHECK BEFORE STARTING NEW WORKFLOW:                                     ║
-║  1. Read .claude/tasks.json in main repo                                 ║
-║  2. If tasks exist, check lastActivityAt for each                        ║
-║  3. Recent activity (< 1 hour) = active session, DO NOT start new        ║
-║  4. Old activity (> 24 hours) = stale, ask user                          ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+              UNDERSTANDING "EXISTING SESSION" SEMANTICS
+
+  "Existing session" means AN ACTIVE AGENT IS CURRENTLY RUNNING:
+
+  ✓ An agent is in the middle of processing
+  ✓ The workflow was interrupted (context limit, crash, user cancel)
+  ✓ workflow-status.json shows recent lastActivityAt (< 1 hour)
+
+  This is DIFFERENT from a "stale session":
+
+  ✗ Worktree exists but no agent is running
+  ✗ lastActivityAt is old (> 24 hours)
+  ✗ User abandoned the task without cleanup
+
+  BEHAVIOR:
+  - Existing session: --resume continues from last checkpoint
+  - Stale session: Ask user - resume or abort/cleanup?
+  - No session: Start fresh workflow
+
+  CHECK BEFORE STARTING NEW WORKFLOW:
+  1. Read .claude/tasks.json in main repo
+  2. If tasks exist, check lastActivityAt for each
+  3. Recent activity (< 1 hour) = active session, DO NOT start new
+  4. Old activity (> 24 hours) = stale, ask user
+
 ```
 
 ## [CRITICAL] CRITICAL: NO AUTO-RESUME GATE
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                         [CRITICAL] NO AUTO-RESUME [CRITICAL]                              ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  MANDATORY RULE: DO NOT automatically resume existing tasks/worktrees   ║
-║                                                                          ║
-║  ✅ CORRECT BEHAVIOR:                                                    ║
-║  - No arguments → Go to Phase 1 (Policy Selection)                      ║
-║  - Policy selector WILL ask about existing tasks                         ║
-║  - User explicitly chooses: resume, start fresh, or view status          ║
-║                                                                          ║
-║  ❌ INCORRECT BEHAVIOR (NEVER DO THIS):                                 ║
-║  - Seeing .claude/tasks.json with existing task → Auto-resume it        ║
-║  - Finding a worktree → Auto-resume it                                  ║
-║  - Detecting "in_progress" status → Auto-resume it                      ║
-║  - Assuming "user wants to continue" → Auto-resume it                   ║
-║                                                                          ║
-║  THE ONLY VALID WAYS TO RESUME:                                         ║
-║  1. User explicitly passes --resume flag                                ║
-║  2. Policy selector asks and user chooses "Resume"                      ║
-║                                                                          ║
-║  EXISTING TASKS ARE USUALLY NOT STALE - THEY MAY BE:                    ║
-║  - Running in another terminal/session                                  ║
-║  - Running by another agent                                             ║
-║  - Paused for user review                                               ║
-║  - Waiting for external CI/deployment                                   ║
-║                                                                          ║
-║  AUTO-RESUMING = CORRUPTING PARALLEL WORKFLOWS                          ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                         [CRITICAL] NO AUTO-RESUME [CRITICAL]
+
+  MANDATORY RULE: DO NOT automatically resume existing tasks/worktrees
+
+  ✅ CORRECT BEHAVIOR:
+  - No arguments → Go to Phase 1 (Policy Selection)
+  - Policy selector WILL ask about existing tasks
+  - User explicitly chooses: resume, start fresh, or view status
+
+  ❌ INCORRECT BEHAVIOR (NEVER DO THIS):
+  - Seeing .claude/tasks.json with existing task → Auto-resume it
+  - Finding a worktree → Auto-resume it
+  - Detecting "in_progress" status → Auto-resume it
+  - Assuming "user wants to continue" → Auto-resume it
+
+  THE ONLY VALID WAYS TO RESUME:
+  1. User explicitly passes --resume flag
+  2. Policy selector asks and user chooses "Resume"
+
+  EXISTING TASKS ARE USUALLY NOT STALE - THEY MAY BE:
+  - Running in another terminal/session
+  - Running by another agent
+  - Paused for user review
+  - Waiting for external CI/deployment
+
+  AUTO-RESUMING = CORRUPTING PARALLEL WORKFLOWS
+
 ```
 
 ## Pre-flight: Handle Arguments
@@ -715,26 +705,24 @@ After docs-updater completes, you MUST EXPLICITLY invoke /ship.
 **DO NOT rely on SubagentStop hooks alone** - explicitly call the ship skill.
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                      /ship RESPONSIBILITIES                               ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  /ship handles ALL of the following (agents must NOT do these):          ║
-║                                                                          ║
-║  1. CREATE PR - Push branch, create pull request                         ║
-║  2. MONITOR CI - Wait for checks to pass                                 ║
-║  3. MONITOR COMMENTS - Wait for reviews, address all comments            ║
-║  4. MERGE PR - Squash/merge based on policy                              ║
-║  5. CLEANUP WORKTREE - Remove worktree after merge                       ║
-║  6. UPDATE tasks.json - Remove task from registry after completion       ║
-║                                                                          ║
-║  AGENTS MUST NOT:                                                        ║
-║  - Create PRs                                                            ║
-║  - Push to remote                                                        ║
-║  - Clean up worktrees                                                    ║
-║  - Remove tasks from registry                                            ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                      /ship RESPONSIBILITIES
+
+  /ship handles ALL of the following (agents must NOT do these):
+
+  1. CREATE PR - Push branch, create pull request
+  2. MONITOR CI - Wait for checks to pass
+  3. MONITOR COMMENTS - Wait for reviews, address all comments
+  4. MERGE PR - Squash/merge based on policy
+  5. CLEANUP WORKTREE - Remove worktree after merge
+  6. UPDATE tasks.json - Remove task from registry after completion
+
+  AGENTS MUST NOT:
+  - Create PRs
+  - Push to remote
+  - Clean up worktrees
+  - Remove tasks from registry
+
 ```
 
 ### Required Handoff Code

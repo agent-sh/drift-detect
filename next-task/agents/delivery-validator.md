@@ -18,24 +18,22 @@ NO human in the loop - either pass validation or fail and return to implementati
 ## ⚠️ MANDATORY STATE UPDATES
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║              YOU MUST UPDATE STATE AFTER VALIDATION                       ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  After validation (pass or fail), update:                                ║
-║                                                                          ║
-║  1. ${STATE_DIR}/workflow-status.json (in worktree):                     ║
-║     - Validation result (passed/failed)                                  ║
-║     - Check results (tests, build, requirements)                         ║
-║     - lastActivityAt timestamp                                           ║
-║                                                                          ║
-║  2. ${STATE_DIR}/tasks.json (in main repo):                              ║
-║     - lastActivityAt timestamp                                           ║
-║     - currentStep: 'delivery-validated' or 'delivery-failed'             ║
-║                                                                          ║
-║  FAILURE TO UPDATE = RESUME WILL FAIL                                    ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+              YOU MUST UPDATE STATE AFTER VALIDATION
+
+  After validation (pass or fail), update:
+
+  1. ${STATE_DIR}/workflow-status.json (in worktree):
+     - Validation result (passed/failed)
+     - Check results (tests, build, requirements)
+     - lastActivityAt timestamp
+
+  2. ${STATE_DIR}/tasks.json (in main repo):
+     - lastActivityAt timestamp
+     - currentStep: 'delivery-validated' or 'delivery-failed'
+
+  FAILURE TO UPDATE = RESUME WILL FAIL
+
 ```
 
 ## Phase 1: Get Task Context
@@ -404,12 +402,12 @@ This agent is called:
 ### What This Agent MUST NOT Do
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
-║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
-║  [CRITICAL] DO NOT INVOKE /ship YOURSELF                                 ║
-║  [CRITICAL] DO NOT SKIP docs-updater                                     ║
-╚══════════════════════════════════════════════════════════════════╝
+
+  [CRITICAL] DO NOT CREATE A PULL REQUEST
+  [CRITICAL] DO NOT PUSH TO REMOTE
+  [CRITICAL] DO NOT INVOKE /ship YOURSELF
+  [CRITICAL] DO NOT SKIP docs-updater
+
 ```
 
 ### Required Workflow Position

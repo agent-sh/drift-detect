@@ -33,22 +33,20 @@ The monitor loop waits for:
 ## Why ALL Comments Matter
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                    EVERY COMMENT MUST BE ADDRESSED                        ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                          ║
-║  • Critical/High issues → Fix immediately                                ║
-║  • Medium issues → Fix (don't defer)                                     ║
-║  • Minor/Nit issues → Fix (shows attention to quality)                   ║
-║  • Style suggestions → Fix (maintains codebase consistency)              ║
-║  • Questions → Answer with explanation                                   ║
-║  • False positives → Reply explaining why, then resolve                  ║
-║  • Not relevant → Reply explaining why, then resolve                     ║
-║                                                                          ║
-║  NEVER ignore a comment. NEVER leave comments unresolved.                ║
-║  A clean PR has ZERO unresolved conversations.                           ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
+
+                    EVERY COMMENT MUST BE ADDRESSED
+
+  • Critical/High issues → Fix immediately
+  • Medium issues → Fix (don't defer)
+  • Minor/Nit issues → Fix (shows attention to quality)
+  • Style suggestions → Fix (maintains codebase consistency)
+  • Questions → Answer with explanation
+  • False positives → Reply explaining why, then resolve
+  • Not relevant → Reply explaining why, then resolve
+
+  NEVER ignore a comment. NEVER leave comments unresolved.
+  A clean PR has ZERO unresolved conversations.
+
 ```
 
 ## The Monitor Loop Algorithm
@@ -421,11 +419,11 @@ while [ $iteration -lt $MAX_ITERATIONS ]; do
 
   if [ "$UNRESOLVED" -eq 0 ] && [ "$CHANGES_REQ" -eq 0 ]; then
     echo ""
-    echo "╔══════════════════════════════════════╗"
-    echo "║  ✓ ALL CHECKS PASSED                 ║"
-    echo "║  ✓ ALL COMMENTS RESOLVED             ║"
-    echo "║  Ready to merge!                     ║"
-    echo "╚══════════════════════════════════════╝"
+    echo ""
+    echo "  ✓ ALL CHECKS PASSED                 "
+    echo "  ✓ ALL COMMENTS RESOLVED             "
+    echo "  Ready to merge!                     "
+    echo ""
     break
   fi
 

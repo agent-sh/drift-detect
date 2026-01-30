@@ -15,9 +15,16 @@ and present prioritized recommendations to the user.
 ## Phase 1: Load Policy from State
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const workflowState = require(path.join(pluginRoot, 'lib/state/workflow-state.js'));
 const state = workflowState.readState();
 const policy = state.policy;
 
@@ -65,9 +72,16 @@ The source configuration comes from policy. It can be:
 ### Parse Source Configuration
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { sources } = require(`${pluginPath}/lib`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const { sources } = require(path.join(pluginRoot, 'lib'));
 
 // Source can be string or object
 const sourceConfig = typeof policy.taskSource === 'string'

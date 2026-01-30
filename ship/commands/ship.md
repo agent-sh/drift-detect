@@ -44,13 +44,15 @@ Parse from $ARGUMENTS:
 ## State Integration
 
 ```javascript
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('ship');
+if (!pluginRoot) { console.error('Error: Could not locate ship plugin root'); process.exit(1); }
+
 const args = '$ARGUMENTS'.split(' ');
 const stateIdx = args.indexOf('--state-file');
 let workflowState = null;
 if (stateIdx >= 0) {
-  const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-  if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-  workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
+  workflowState = require(`${pluginRoot}/lib/state/workflow-state.js`);
 }
 
 function updatePhase(phase, result) {
@@ -64,8 +66,7 @@ function updatePhase(phase, result) {
 
 ```bash
 # Detect platform and project configuration
-PLUGIN_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
-if [ -z "$PLUGIN_PATH" ]; then echo "Error: PLUGIN_ROOT environment variable not set"; exit 1; fi
+PLUGIN_PATH=$(node -e "const { getPluginRoot, normalizePathForRequire } = require('@awesome-slash/lib/cross-platform'); const root = getPluginRoot('ship'); if (!root) { console.error('Error: Could not locate ship plugin root'); process.exit(1); } console.log(normalizePathForRequire(root));")
 PLATFORM=$(node "$PLUGIN_PATH/lib/platform/detect-platform.js")
 TOOLS=$(node "$PLUGIN_PATH/lib/platform/verify-tools.js")
 
@@ -294,7 +295,7 @@ git checkout $MAIN_BRANCH
 git pull origin $MAIN_BRANCH
 
 # Update repo-map if it exists (non-blocking)
-node -e "const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\\\/g, '/'); const repoMap = require(\`\${pluginPath}/lib/repo-map\`); if (repoMap.exists(process.cwd())) { repoMap.update(process.cwd(), {}).then(() => console.log('✓ Repo-map updated')).catch((e) => console.log('⚠️ Repo-map update failed: ' + e.message)); } else { console.log('Repo-map not found, skipping'); }" || true
+node -e "const { getPluginRoot } = require('@awesome-slash/lib/cross-platform'); const pluginRoot = getPluginRoot('ship'); if (!pluginRoot) { console.log('Plugin root not found, skipping repo-map'); process.exit(0); } const repoMap = require(\`\${pluginRoot}/lib/repo-map\`); if (repoMap.exists(process.cwd())) { repoMap.update(process.cwd(), {}).then(() => console.log('✓ Repo-map updated')).catch((e) => console.log('⚠️ Repo-map update failed: ' + e.message)); } else { console.log('Repo-map not found, skipping'); }" || true
 MERGE_SHA=$(git rev-parse HEAD)
 echo "✓ Merged PR #$PR_NUMBER at $MERGE_SHA"
 ```

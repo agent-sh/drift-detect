@@ -39,7 +39,9 @@ All behavior must follow:
 ## Phase 1: Initialize Investigation State
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const baselineStore = require(`${pluginRoot}/lib/perf/baseline-store.js`);
 const benchmarkRunner = require(`${pluginRoot}/lib/perf/benchmark-runner.js`);

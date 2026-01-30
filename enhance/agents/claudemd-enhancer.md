@@ -197,9 +197,10 @@ Generate a structured markdown report:
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { projectmemoryAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { projectmemoryAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Find and analyze project memory
 const results = await projectmemoryAnalyzer.analyze(projectPath, {

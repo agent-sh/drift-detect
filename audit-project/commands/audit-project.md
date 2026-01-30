@@ -38,10 +38,10 @@ Otherwise create a new queue file. See `audit-project-agents.md` for queue handl
 ### Platform Detection
 
 ```bash
-PLUGIN_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
-if [ -z "$PLUGIN_PATH" ]; then echo "Error: PLUGIN_ROOT environment variable not set"; exit 1; fi
-PLATFORM=$(node "$PLUGIN_PATH/lib/platform/detect-platform.js")
-TOOLS=$(node "$PLUGIN_PATH/lib/platform/verify-tools.js")
+# Get plugin root using Node.js helper
+PLUGIN_ROOT=$(node -e "const { getPluginRoot } = require('@awesome-slash/lib/cross-platform'); const root = getPluginRoot('audit-project'); if (!root) { console.error('Error: Could not locate audit-project plugin root'); process.exit(1); } console.log(root);")
+PLATFORM=$(node "$PLUGIN_ROOT/lib/platform/detect-platform.js")
+TOOLS=$(node "$PLUGIN_ROOT/lib/platform/verify-tools.js")
 
 PROJECT_TYPE=$(echo $PLATFORM | jq -r '.projectType')
 PACKAGE_MGR=$(echo $PLATFORM | jq -r '.packageManager')

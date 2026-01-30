@@ -32,14 +32,11 @@ Example: `/drift-detect --sources github,docs --depth quick --output file`
 ## Phase 1: Parse Arguments and Collect Data
 
 ```javascript
-// Normalize path for Windows (backslashes break in require strings)
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) {
-  console.error('Error: CLAUDE_PLUGIN_ROOT or PLUGIN_ROOT environment variable not set');
-  process.exit(1);
-}
-const collectors = require(`${pluginPath}/lib/drift-detect/collectors.js`);
-const repoMap = require(`${pluginPath}/lib/repo-map`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('drift-detect');
+if (!pluginRoot) { console.error('Error: Could not locate drift-detect plugin root'); process.exit(1); }
+const collectors = require(`${pluginRoot}/lib/drift-detect/collectors.js`);
+const repoMap = require(`${pluginRoot}/lib/repo-map`);
 
 // Suggest repo-map if missing or stale
 const mapStatus = repoMap.status(process.cwd());

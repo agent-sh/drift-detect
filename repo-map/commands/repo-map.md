@@ -27,9 +27,10 @@ Examples:
 ### 1) Load Repo Map Module
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const repoMap = require(`${pluginPath}/lib/repo-map`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('repo-map');
+if (!pluginRoot) { console.error('Error: Could not locate repo-map plugin root'); process.exit(1); }
+const repoMap = require(`${pluginRoot}/lib/repo-map`);
 ```
 
 ### 2) Parse Arguments

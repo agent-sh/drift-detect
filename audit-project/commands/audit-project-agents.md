@@ -32,9 +32,10 @@ Create a temporary review queue file in the platform state dir. Review passes ap
 ```javascript
 const path = require('path');
 const fs = require('fs');
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { getStateDirPath } = require(`${pluginPath}/lib/platform/state-dir.js`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('audit-project');
+if (!pluginRoot) { console.error('Error: Could not locate audit-project plugin root'); process.exit(1); }
+const { getStateDirPath } = require(`${pluginRoot}/lib/platform/state-dir.js`);
 
 const stateDirPath = getStateDirPath(process.cwd());
 if (!fs.existsSync(stateDirPath)) {

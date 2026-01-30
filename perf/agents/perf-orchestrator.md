@@ -84,7 +84,9 @@ If a phase cannot proceed, explain why and request only the minimum missing info
 ## Setup Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 
 // Ask for missing scenario, metrics, success criteria, benchmark command, version
@@ -96,7 +98,9 @@ const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.j
 Use the perf helpers to store baseline data and log evidence:
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const baselineStore = require(`${pluginRoot}/lib/perf/baseline-store.js`);
 
@@ -124,7 +128,9 @@ investigationState.appendBaselineLog({
 ## Breaking-Point Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const breakingPointRunner = require(`${pluginRoot}/lib/perf/breaking-point-runner.js`);
 
@@ -146,7 +152,9 @@ investigationState.updateInvestigation({
 ## Constraint Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const constraintRunner = require(`${pluginRoot}/lib/perf/constraint-runner.js`);
 
@@ -168,7 +176,9 @@ investigationState.updateInvestigation({
 ## Profiling Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const profilingRunner = require(`${pluginRoot}/lib/perf/profiling-runner.js`);
 const checkpoint = require(`${pluginRoot}/lib/perf/checkpoint.js`);
@@ -203,7 +213,9 @@ checkpoint.commitCheckpoint({
 ## Optimization Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const optimizationRunner = require(`${pluginRoot}/lib/perf/optimization-runner.js`);
 
 const result = optimizationRunner.runOptimizationExperiment({
@@ -218,7 +230,9 @@ const result = optimizationRunner.runOptimizationExperiment({
 ## Decision Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const checkpoint = require(`${pluginRoot}/lib/perf/checkpoint.js`);
 
@@ -246,7 +260,9 @@ checkpoint.commitCheckpoint({
 ## Consolidation Phase (Implementation Guidance)
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const consolidation = require(`${pluginRoot}/lib/perf/consolidation.js`);
 const investigationState = require(`${pluginRoot}/lib/perf/investigation-state.js`);
 const checkpoint = require(`${pluginRoot}/lib/perf/checkpoint.js`);
@@ -276,7 +292,9 @@ checkpoint.commitCheckpoint({
 Invoke after EVERY phase once the investigation log is updated.
 
 ```javascript
-const pluginRoot = (process.env.PLUGIN_ROOT || process.env.CLAUDE_PLUGIN_ROOT || process.cwd()).replace(/\\/g, '/');
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('perf');
+if (!pluginRoot) { console.error('Error: Could not locate perf plugin root'); process.exit(1); }
 const checkpoint = require(`${pluginRoot}/lib/perf/checkpoint.js`);
 
 const result = checkpoint.commitCheckpoint({

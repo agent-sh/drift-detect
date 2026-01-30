@@ -301,9 +301,16 @@ Parse from $ARGUMENTS:
 ## Pre-flight: Handle Arguments
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const workflowState = require(path.join(pluginRoot, 'lib/state/workflow-state.js'));
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
 
 // [CRITICAL] CRITICAL CHECK: If no flags provided, DO NOT check for existing tasks here
@@ -417,9 +424,16 @@ function mapStepToPhase(step) {
 No agent needed - call `sources.getPolicyQuestions()` and use AskUserQuestion.
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { sources } = require(`${pluginPath}/lib`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const { sources } = require(path.join(pluginRoot, 'lib'));
 
 // Get questions with cache-aware options (cached preference shown first if exists)
 const { questions, cachedPreference } = sources.getPolicyQuestions();

@@ -81,17 +81,15 @@ For **diff-based cleanup** of new work only, use the `deslop-work` agent via `/n
 Run the detection script to scan for slop patterns:
 
 ```bash
-PLUGIN_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
-if [ -z "$PLUGIN_PATH" ]; then echo "Error: PLUGIN_ROOT environment variable not set"; exit 1; fi
-node "$PLUGIN_PATH/scripts/detect.js" <scope> --compact
+PLUGIN_ROOT=$(node -e "const { getPluginRoot } = require('@awesome-slash/lib/cross-platform'); const root = getPluginRoot('deslop'); if (!root) { console.error('Error: Could not locate deslop plugin root'); process.exit(1); } console.log(root);")
+node "$PLUGIN_ROOT/scripts/detect.js" <scope> --compact
 ```
 
 For deep analysis with all multi-pass analyzers:
 
 ```bash
-PLUGIN_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
-if [ -z "$PLUGIN_PATH" ]; then echo "Error: PLUGIN_ROOT environment variable not set"; exit 1; fi
-node "$PLUGIN_PATH/scripts/detect.js" <scope> --deep --compact
+PLUGIN_ROOT=$(node -e "const { getPluginRoot } = require('@awesome-slash/lib/cross-platform'); const root = getPluginRoot('deslop'); if (!root) { console.error('Error: Could not locate deslop plugin root'); process.exit(1); } console.log(root);")
+node "$PLUGIN_ROOT/scripts/detect.js" <scope> --deep --compact
 ```
 
 Parse the output to identify top 10 hotspots, sorted by:
@@ -113,9 +111,8 @@ Present findings as a prioritized cleanup plan:
 Run detection with apply flag for auto-fixable patterns:
 
 ```bash
-PLUGIN_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}"
-if [ -z "$PLUGIN_PATH" ]; then echo "Error: PLUGIN_ROOT environment variable not set"; exit 1; fi
-node "$PLUGIN_PATH/scripts/detect.js" <scope> --apply --max <max-changes> --compact
+PLUGIN_ROOT=$(node -e "const { getPluginRoot } = require('@awesome-slash/lib/cross-platform'); const root = getPluginRoot('deslop'); if (!root) { console.error('Error: Could not locate deslop plugin root'); process.exit(1); } console.log(root);")
+node "$PLUGIN_ROOT/scripts/detect.js" <scope> --apply --max <max-changes> --compact
 ```
 
 Then implement remaining manual fixes one changeset at a time:

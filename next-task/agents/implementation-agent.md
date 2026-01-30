@@ -42,9 +42,16 @@ Before implementation:
 ## Phase 1: Load Approved Plan
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const workflowState = require(path.join(pluginRoot, 'lib/state/workflow-state.js'));
 const state = workflowState.readFlow();
 
 if (!state.plan?.approved) {
@@ -59,9 +66,16 @@ console.log(`Steps: ${plan.steps.length}`);
 ## Phase 1.5: Use Repo Map for Symbol Locations (If Available)
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const repoMap = require(`${pluginPath}/lib/repo-map`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const repoMap = require(path.join(pluginRoot, 'lib/repo-map'));
 const map = repoMap.load(process.cwd());
 
 if (map) {

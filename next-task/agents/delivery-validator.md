@@ -39,9 +39,16 @@ NO human in the loop - either pass validation or fail and return to implementati
 ## Phase 1: Get Task Context
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
+const { getPluginRoot } = require('./lib/cross-platform');
+const path = require('path');
+
+const pluginRoot = getPluginRoot('next-task');
+if (!pluginRoot) {
+  console.error('Error: Could not locate next-task plugin installation');
+  process.exit(1);
+}
+
+const workflowState = require(path.join(pluginRoot, 'lib/state/workflow-state.js'));
 
 const state = workflowState.readFlow();
 const task = state.task;

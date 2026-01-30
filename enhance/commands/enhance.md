@@ -129,7 +129,7 @@ Parse from $ARGUMENTS:
 ## Workflow
 
 1. **Discover plugins** - Find all plugins in `plugins/` directory
-2. **Load patterns** - Import from `${CLAUDE_PLUGIN_ROOT}/lib/enhance/`
+2. **Load patterns** - Import from `{pluginRoot}/lib/enhance/`
 3. **Analyze each plugin**:
    - Validate plugin.json structure
    - Check MCP tool definitions
@@ -184,9 +184,10 @@ Parse from $ARGUMENTS:
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { pluginAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { pluginAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
@@ -235,7 +236,7 @@ Parse from $ARGUMENTS:
 ## Workflow
 
 1. **Discover agents** - Find all .md files in agents directory
-2. **Load patterns** - Import from `${CLAUDE_PLUGIN_ROOT}/lib/enhance/agent-patterns`
+2. **Load patterns** - Import from `{pluginRoot}/lib/enhance/agent-patterns`
 3. **Analyze each agent**:
    - Parse YAML frontmatter
    - Check structure (role, output format, constraints)
@@ -324,9 +325,10 @@ Parse from $ARGUMENTS:
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { agentAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { agentAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
@@ -423,7 +425,7 @@ For user-facing documentation:
 ## Workflow
 
 1. **Discover docs** - Find all .md files in target directory
-2. **Load patterns** - Import from `${CLAUDE_PLUGIN_ROOT}/lib/enhance/docs-patterns`
+2. **Load patterns** - Import from `{pluginRoot}/lib/enhance/docs-patterns`
 3. **Analyze each doc**:
    - Validate structure (headings, links, code blocks)
    - Check for RAG-friendly chunking (AI mode)
@@ -507,9 +509,10 @@ For user-facing documentation:
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { docsAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { docsAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
@@ -596,7 +599,7 @@ Note: Reference validation (file paths, npm commands) is always enabled.
 ## Workflow
 
 1. **Find file** - Locate CLAUDE.md or AGENTS.md
-2. **Load patterns** - Import from `${CLAUDE_PLUGIN_ROOT}/lib/enhance/projectmemory-patterns`
+2. **Load patterns** - Import from `{pluginRoot}/lib/enhance/projectmemory-patterns`
 3. **Analyze structure**:
    - Check for critical rules section
    - Verify architecture/structure section
@@ -704,9 +707,10 @@ Note: Reference validation (file paths, npm commands) is always enabled.
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { projectmemoryAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { projectmemoryAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
@@ -789,7 +793,7 @@ Parse from $ARGUMENTS:
 
 1. **Discover prompts** - Find all .md and .txt files in target
 2. **Classify** - Detect prompt type from path/content
-3. **Load patterns** - Import from `${CLAUDE_PLUGIN_ROOT}/lib/enhance/prompt-patterns`
+3. **Load patterns** - Import from `{pluginRoot}/lib/enhance/prompt-patterns`
 4. **Analyze each prompt**:
    - Check clarity (vague language, negative-only constraints)
    - Validate structure (XML tags, heading hierarchy)
@@ -882,9 +886,10 @@ Parse from $ARGUMENTS:
 ## Implementation
 
 ```javascript
-const pluginPath = (process.env.PLUGIN_ROOT || '').replace(/\\/g, '/');
-if (!pluginPath) { console.error('Error: PLUGIN_ROOT environment variable not set'); process.exit(1); }
-const { promptAnalyzer } = require(`${pluginPath}/lib/enhance`);
+const { getPluginRoot } = require('@awesome-slash/lib/cross-platform');
+const pluginRoot = getPluginRoot('enhance');
+if (!pluginRoot) { console.error('Error: Could not locate enhance plugin root'); process.exit(1); }
+const { promptAnalyzer } = require(`${pluginRoot}/lib/enhance`);
 
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);

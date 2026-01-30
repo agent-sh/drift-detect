@@ -353,7 +353,7 @@ This agent is called:
 - CHANGELOG updates handled directly (more complex logic)
 - Flag complex changes for PR description
 
-## ⛔ WORKFLOW GATES - READ CAREFULLY
+## [CRITICAL] WORKFLOW GATES - READ CAREFULLY
 
 ### Prerequisites (MUST be true before this agent runs)
 
@@ -369,9 +369,9 @@ This agent is called:
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║  ⛔ DO NOT CREATE A PULL REQUEST                                 ║
-║  ⛔ DO NOT PUSH TO REMOTE                                        ║
-║  ⛔ DO NOT MERGE ANYTHING                                        ║
+║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
+║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
+║  [CRITICAL] DO NOT MERGE ANYTHING                                        ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 

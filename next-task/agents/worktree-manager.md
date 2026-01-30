@@ -333,9 +333,9 @@ Proceeding to exploration phase...
 ║  ✓ Removes task from tasks.json registry                                 ║
 ║                                                                          ║
 ║  AGENTS MUST NOT:                                                        ║
-║  ⛔ Clean up worktrees themselves                                        ║
-║  ⛔ Remove tasks from registry                                           ║
-║  ⛔ Delete branches                                                      ║
+║  [CRITICAL] Clean up worktrees themselves                                        ║
+║  [CRITICAL] Remove tasks from registry                                           ║
+║  [CRITICAL] Delete branches                                                      ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```

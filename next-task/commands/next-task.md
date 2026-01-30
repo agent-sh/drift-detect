@@ -72,7 +72,7 @@ Implementation → Pre-Review Gates → Review Loop → Delivery Validation
 
 **After plan approval, everything runs autonomously until delivery validation passes.**
 
-## ⛔ WORKFLOW ENFORCEMENT - CRITICAL
+## [CRITICAL] WORKFLOW ENFORCEMENT - CRITICAL
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
@@ -95,12 +95,12 @@ Implementation → Pre-Review Gates → Review Loop → Delivery Validation
 ║                                                                          ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
-║  ⛔ NO AGENT may create a PR - only /ship creates PRs                    ║
-║  ⛔ NO AGENT may push to remote - only /ship pushes                      ║
-║  ⛔ NO AGENT may skip the Phase 9 review loop                            ║
-║  ⛔ NO AGENT may skip the delivery-validator                             ║
-║  ⛔ NO AGENT may skip the docs-updater                                   ║
-║  ⛔ NO AGENT may skip workflow-status.json updates after each phase      ║
+║  [CRITICAL] NO AGENT may create a PR - only /ship creates PRs                    ║
+║  [CRITICAL] NO AGENT may push to remote - only /ship pushes                      ║
+║  [CRITICAL] NO AGENT may skip the Phase 9 review loop                            ║
+║  [CRITICAL] NO AGENT may skip the delivery-validator                             ║
+║  [CRITICAL] NO AGENT may skip the docs-updater                                   ║
+║  [CRITICAL] NO AGENT may skip workflow-status.json updates after each phase      ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -273,11 +273,11 @@ Parse from $ARGUMENTS:
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-## ⛔ CRITICAL: NO AUTO-RESUME GATE
+## [CRITICAL] CRITICAL: NO AUTO-RESUME GATE
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║                         ⛔ NO AUTO-RESUME ⛔                              ║
+║                         [CRITICAL] NO AUTO-RESUME [CRITICAL]                              ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
 ║  MANDATORY RULE: DO NOT automatically resume existing tasks/worktrees   ║
@@ -316,7 +316,7 @@ if (!pluginPath) { console.error('Error: CLAUDE_PLUGIN_ROOT or PLUGIN_ROOT not s
 const workflowState = require(`${pluginPath}/lib/state/workflow-state.js`);
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
 
-// ⛔ CRITICAL CHECK: If no flags provided, DO NOT check for existing tasks here
+// [CRITICAL] CRITICAL CHECK: If no flags provided, DO NOT check for existing tasks here
 // That check happens in policy-selector, which will ASK the user
 if (args.length === 0 || (!args.includes('--resume') && !args.includes('--status') && !args.includes('--abort'))) {
   console.log("No arguments provided - starting Phase 1 (Policy Selection)");

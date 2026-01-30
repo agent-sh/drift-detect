@@ -343,16 +343,16 @@ workflowState.updateState({
 });
 ```
 
-## ⛔ WORKFLOW GATES - READ CAREFULLY
+## [CRITICAL] WORKFLOW GATES - READ CAREFULLY
 
 ### What This Agent MUST NOT Do
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║  ⛔ DO NOT CREATE A PULL REQUEST                                 ║
-║  ⛔ DO NOT PUSH TO REMOTE                                        ║
-║  ⛔ DO NOT RUN REVIEW AGENTS YOURSELF                            ║
-║  ⛔ DO NOT SKIP TO SHIPPING                                      ║
+║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
+║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
+║  [CRITICAL] DO NOT RUN REVIEW AGENTS YOURSELF                            ║
+║  [CRITICAL] DO NOT SKIP TO SHIPPING                                      ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 

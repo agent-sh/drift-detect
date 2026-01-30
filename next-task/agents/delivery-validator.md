@@ -390,7 +390,7 @@ This agent is called:
 1. **After review loop completes** with approval
 2. **After each retry** when previous validation failed
 
-## ⛔ WORKFLOW GATES - READ CAREFULLY
+## [CRITICAL] WORKFLOW GATES - READ CAREFULLY
 
 ### Prerequisites (MUST be true before this agent runs)
 
@@ -405,10 +405,10 @@ This agent is called:
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║  ⛔ DO NOT CREATE A PULL REQUEST                                 ║
-║  ⛔ DO NOT PUSH TO REMOTE                                        ║
-║  ⛔ DO NOT INVOKE /ship YOURSELF                                 ║
-║  ⛔ DO NOT SKIP docs-updater                                     ║
+║  [CRITICAL] DO NOT CREATE A PULL REQUEST                                 ║
+║  [CRITICAL] DO NOT PUSH TO REMOTE                                        ║
+║  [CRITICAL] DO NOT INVOKE /ship YOURSELF                                 ║
+║  [CRITICAL] DO NOT SKIP docs-updater                                     ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
 

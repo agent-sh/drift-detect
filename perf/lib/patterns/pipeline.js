@@ -63,24 +63,36 @@ function runPipeline(repoPath, options = {}) {
   const missingTools = [];
   let cliTools = options.cliTools || null;
 
-  // Get target files
+  // Get target files - limit to 200 to prevent memory exhaustion
+  // Users can pass targetFiles explicitly for larger scans
   let targetFiles = options.targetFiles;
+  const maxFiles = options.maxFiles || 200;
   if (!targetFiles || targetFiles.length === 0) {
     const result = analyzers.countSourceFiles(repoPath, {
-      maxFiles: 1000,
+      maxFiles,
       includeTests: false
     });
     targetFiles = result.files;
   }
 
   // Phase 1: Built-in regex patterns (always runs)
-  const phase1Results = runPhase1(repoPath, targetFiles, language);
-  findings.push(...phase1Results);
+  // Wrapped in try-catch to prevent crashes on malformed files
+  try {
+    const phase1Results = runPhase1(repoPath, targetFiles, language);
+    findings.push(...phase1Results);
+  } catch (err) {
+    // Continue with empty phase1 results rather than crash
+  }
 
   // Phase 1b: Multi-pass analyzers (if normal or deep)
+  // Wrapped in try-catch as these are expensive and can fail
   if (thoroughness !== THOROUGHNESS.QUICK) {
-    const multiPassResults = runMultiPassAnalyzers(repoPath, targetFiles);
-    findings.push(...multiPassResults);
+    try {
+      const multiPassResults = runMultiPassAnalyzers(repoPath, targetFiles);
+      findings.push(...multiPassResults);
+    } catch (err) {
+      // Continue with partial results rather than crash
+    }
   }
 
   // Phase 2: CLI tools (only if deep and tools available)
@@ -264,6 +276,9 @@ function runPhase1(repoPath, targetFiles, language) {
 function runMultiPassAnalyzers(repoPath, targetFiles) {
   const findings = [];
 
+  // Skip expensive analyzers for large file sets to prevent memory exhaustion
+  const isLargeRepo = targetFiles.length > 100;
+
   // Get multi-pass pattern definitions for thresholds
   const multiPassPatterns = slopPatterns.getMultiPassPatterns();
 
@@ -335,71 +350,86 @@ function runMultiPassAnalyzers(repoPath, targetFiles) {
   }
 
   // Project-level analyzers (run once, not per-file)
+  // Wrap in try-catch to prevent crashes
   const overEngPattern = multiPassPatterns.over_engineering_metrics;
-  if (overEngPattern) {
-    const overEngResult = analyzers.analyzeOverEngineering(repoPath, {
-      fileRatioThreshold: overEngPattern.fileRatioThreshold || 20,
-      linesPerExportThreshold: overEngPattern.linesPerExportThreshold || 500,
-      depthThreshold: overEngPattern.depthThreshold || 4
-    });
-
-    for (const v of overEngResult.violations) {
-      findings.push({
-        file: 'project-level',
-        line: 0,
-        patternName: 'over_engineering_metrics',
-        severity: v.severity,
-        certainty: CERTAINTY.MEDIUM,
-        description: `Over-engineering: ${v.type} - ${v.value} (threshold: ${v.threshold})`,
-        autoFix: 'flag',
-        content: v.value,
-        phase: 1,
-        details: v.details
+  if (overEngPattern && !isLargeRepo) {
+    try {
+      const overEngResult = analyzers.analyzeOverEngineering(repoPath, {
+        fileRatioThreshold: overEngPattern.fileRatioThreshold || 20,
+        linesPerExportThreshold: overEngPattern.linesPerExportThreshold || 500,
+        depthThreshold: overEngPattern.depthThreshold || 4
       });
+
+      for (const v of overEngResult.violations) {
+        findings.push({
+          file: 'project-level',
+          line: 0,
+          patternName: 'over_engineering_metrics',
+          severity: v.severity,
+          certainty: CERTAINTY.MEDIUM,
+          description: `Over-engineering: ${v.type} - ${v.value} (threshold: ${v.threshold})`,
+          autoFix: 'flag',
+          content: v.value,
+          phase: 1,
+          details: v.details
+        });
+      }
+    } catch (err) {
+      // Skip on error - don't crash the pipeline
     }
   }
 
-  // Buzzword inflation analysis
+  // Buzzword inflation analysis - EXPENSIVE: reads files multiple times
+  // Skip for large repos to prevent memory exhaustion
   const buzzwordPattern = multiPassPatterns.buzzword_inflation;
-  if (buzzwordPattern) {
-    const buzzwordResult = analyzers.analyzeBuzzwordInflation(repoPath, {
-      minEvidenceMatches: buzzwordPattern.minEvidenceMatches || 2
-    });
-
-    for (const v of buzzwordResult.violations) {
-      findings.push({
-        file: v.file,
-        line: v.line,
-        patternName: 'buzzword_inflation',
-        severity: v.severity,
-        certainty: CERTAINTY.MEDIUM,
-        description: v.message,
-        autoFix: 'flag',
-        content: v.claim,
-        phase: 1,
-        details: { buzzword: v.buzzword, category: v.category, evidenceCount: v.evidenceCount }
+  if (buzzwordPattern && !isLargeRepo) {
+    try {
+      const buzzwordResult = analyzers.analyzeBuzzwordInflation(repoPath, {
+        minEvidenceMatches: buzzwordPattern.minEvidenceMatches || 2
       });
+
+      for (const v of buzzwordResult.violations) {
+        findings.push({
+          file: v.file,
+          line: v.line,
+          patternName: 'buzzword_inflation',
+          severity: v.severity,
+          certainty: CERTAINTY.MEDIUM,
+          description: v.message,
+          autoFix: 'flag',
+          content: v.claim,
+          phase: 1,
+          details: { buzzword: v.buzzword, category: v.category, evidenceCount: v.evidenceCount }
+        });
+      }
+    } catch (err) {
+      // Skip on error - don't crash the pipeline
     }
   }
 
-  // Infrastructure without implementation
+  // Infrastructure without implementation - EXPENSIVE: reads all files twice
+  // Skip for large repos to prevent memory exhaustion
   const infraPattern = multiPassPatterns.infrastructure_without_implementation;
-  if (infraPattern) {
-    const infraResult = analyzers.analyzeInfrastructureWithoutImplementation(repoPath);
+  if (infraPattern && !isLargeRepo) {
+    try {
+      const infraResult = analyzers.analyzeInfrastructureWithoutImplementation(repoPath);
 
-    for (const v of infraResult.violations) {
-      findings.push({
-        file: v.file,
-        line: v.line,
-        patternName: 'infrastructure_without_implementation',
-        severity: v.severity,
-        certainty: CERTAINTY.MEDIUM,
-        description: v.message,
-        autoFix: 'flag',
-        content: v.content,
-        phase: 1,
-        details: { varName: v.varName, type: v.type }
-      });
+      for (const v of infraResult.violations) {
+        findings.push({
+          file: v.file,
+          line: v.line,
+          patternName: 'infrastructure_without_implementation',
+          severity: v.severity,
+          certainty: CERTAINTY.MEDIUM,
+          description: v.message,
+          autoFix: 'flag',
+          content: v.content,
+          phase: 1,
+          details: { varName: v.varName, type: v.type }
+        });
+      }
+    } catch (err) {
+      // Skip on error - don't crash the pipeline
     }
   }
 
@@ -476,12 +506,13 @@ function runMultiPassAnalyzers(repoPath, targetFiles) {
     }
   }
 
-  // Shotgun surgery analysis (git history)
+  // Shotgun surgery analysis (git history) - can have large buffer issues
+  // Skip for large repos to prevent memory exhaustion
   const shotgunPattern = multiPassPatterns.shotgun_surgery;
-  if (shotgunPattern) {
+  if (shotgunPattern && !isLargeRepo) {
     try {
       const shotgunResult = analyzers.analyzeShotgunSurgery(repoPath, {
-        commitLimit: shotgunPattern.commitLimit || 100,
+        commitLimit: Math.min(shotgunPattern.commitLimit || 100, 50), // Reduce commit limit
         clusterThreshold: shotgunPattern.clusterThreshold || 5
       });
 

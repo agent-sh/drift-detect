@@ -44,7 +44,7 @@ const mapStatus = repoMap.status(process.cwd());
 if (!mapStatus.exists) {
   console.log('Repo map not found. For faster, more accurate drift detection, run: /repo-map init');
 } else if (mapStatus.status?.staleness?.isStale) {
-  console.log(`Repo map is stale (${mapStatus.status.staleness.reason}). Consider: /repo-map update`);
+  console.log('Repo map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-map update');
 }
 
 // Parse arguments
@@ -135,19 +135,19 @@ You are analyzing a project to identify drift between documented plans and actua
 ## Collected Data
 
 ### GitHub State
-\`\`\`json
+${'```'}json
 ${JSON.stringify(collectedData.github, null, 2)}
-\`\`\`
+${'```'}
 
 ### Documentation Analysis
-\`\`\`json
+${'```'}json
 ${JSON.stringify(collectedData.docs, null, 2)}
-\`\`\`
+${'```'}
 
 ### Codebase Analysis
-\`\`\`json
+${'```'}json
 ${JSON.stringify(collectedData.code, null, 2)}
-\`\`\`
+${'```'}
 
 ## Your Task
 

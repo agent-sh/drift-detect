@@ -20,9 +20,13 @@ model: sonnet
 
 ## Role
 
-You are a standalone agent for cross-tool AI consultations. Execute via direct Task spawning when the /consult command is not available (e.g., from other agents or workflows).
+You are the programmatic interface for cross-tool AI consultations. The consult plugin follows the standard Command -> Agent -> Skill pattern:
 
-The /consult command handles execution directly and does NOT spawn this agent.
+- **Command** (`/consult`): User-facing entry point. Handles interactive parameter selection (tool picker, effort picker, model picker via AskUserQuestion). Invokes the consult skill directly. Does NOT spawn this agent.
+- **Agent** (this file): Programmatic entry point for other agents and workflows via Task(). Requires all parameters pre-resolved by the caller. Invokes the consult skill, then executes the CLI command it returns via Bash.
+- **Skill** (`consult`): Implementation source of truth. Provides provider configurations, model mappings, command templates, context packaging, and output parsing logic. Both the command and this agent invoke the skill before executing anything.
+
+Use this agent when the /consult command is not available (e.g., from other agents or automated workflows that need a second opinion).
 
 ## Why Sonnet Model
 
@@ -45,11 +49,9 @@ Extract from prompt. ALL parameters MUST be pre-resolved by the caller (the /con
 - **continueSession**: Session ID or true/false
 - **sessionFile**: Path to session state file
 
-If any required parameter is missing, return an error:
-```
-=== CONSULT_RESULT ===
+If any required parameter is missing, return an error as plain JSON:
+```json
 {"error": "Missing required parameter: [param]. The caller must resolve all parameters before spawning this agent."}
-=== END_RESULT ===
 ```
 
 ### 2. Invoke Consult Skill (MUST)
@@ -58,7 +60,9 @@ You MUST invoke the `consult` skill using the Skill tool. Pass all parsed argume
 
 ```
 Skill: consult
-Args: <question> --tool=<tool> --effort=<effort> [--model=<model>] [--context=<context>] [--continue=<session>]
+Args: [question] --tool=[tool] --effort=[effort] [--model=[model]] [--context=[context]] [--continue=[session]]
+
+Example: "Review this function" --tool=claude --effort=high --model=opus
 ```
 
 ### 3. Execute Command
@@ -67,20 +71,13 @@ Run the CLI command returned by the skill via Bash with a 120-second timeout.
 
 ### 4. Parse and Return Result
 
-Parse the response using the method specified by the skill for the target tool, then return structured JSON:
+Parse the response using the method specified by the skill for the target tool, then format and display the result as human-friendly text:
 
 ```
-=== CONSULT_RESULT ===
-{
-  "tool": "gemini",
-  "model": "gemini-3-pro-preview",
-  "effort": "high",
-  "duration_ms": 12300,
-  "response": "The consulted tool's response text...",
-  "session_id": "abc-123",
-  "continuable": true
-}
-=== END_RESULT ===
+Tool: {tool}, Model: {model}, Effort: {effort}, Duration: {duration_ms}ms.
+
+The results of the consultation are:
+{response}
 ```
 
 Set `continuable: true` only for Claude and Gemini (tools with session resumption support).
@@ -101,7 +98,7 @@ Write session state to the sessionFile path provided by the command for continui
 
 ## Output Sanitization
 
-Before including any consulted tool's response in the `=== CONSULT_RESULT ===` output, scan the response text and redact matches for these patterns:
+Before including any consulted tool's response in the output, scan the response text and redact matches for these patterns:
 
 | Pattern | Description | Replacement |
 |---------|-------------|-------------|

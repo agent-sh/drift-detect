@@ -57,7 +57,12 @@ MUST resolve ALL missing parameters interactively before Phase 3. ONLY skip this
 #### Step 2a: Handle --continue
 
 If `--continue` is present:
-1. Read the session file at `{AI_STATE_DIR}/consult/last-session.json` (where AI_STATE_DIR defaults to `.claude`)
+1. Read the session file at `{AI_STATE_DIR}/consult/last-session.json`
+
+   Platform state directory:
+   - Claude Code: `.claude/`
+   - OpenCode: `.opencode/`
+   - Codex CLI: `.codex/`
 2. If the file exists, restore the saved tool, session_id, and model from it
 3. If the file does not exist, show `[WARN] No previous session found` and proceed as a fresh consultation
 
@@ -185,36 +190,36 @@ With all parameters resolved (tool, effort, model, question, and optionally cont
 
 ```
 Skill: consult
-Args: "<question>" --tool=<tool> --effort=<effort> --model=<model> [--context=<context>] [--continue=<session_id>]
+Args: "[question]" --tool=[tool] --effort=[effort] --model=[model] [--context=[context]] [--continue=[session_id]]
+
+Example: "Is this the right approach?" --tool=gemini --effort=high --model=gemini-3-pro
 ```
 
-The skill handles the full consultation lifecycle: it resolves the model from the effort level, builds the CLI command, packages any context, executes the command via Bash with a 120-second timeout, and returns the result between `=== CONSULT_RESULT ===` markers.
+The skill handles the full consultation lifecycle: it resolves the model from the effort level, builds the CLI command, packages any context, executes the command via Bash with a 120-second timeout, and returns a plain JSON result.
 
 ### Phase 4: Parse Skill Output
 
-The skill returns structured JSON between `=== CONSULT_RESULT ===` and `=== END_RESULT ===` markers containing: `tool`, `model`, `effort`, `duration_ms`, `response`, `session_id`, and `continuable`.
+The skill returns a plain JSON object containing: `tool`, `model`, `effort`, `duration_ms`, `response`, `session_id`, and `continuable`. Parse the JSON directly from the skill output.
 
 ### Phase 5: Present Results
 
-After the CLI command completes, extract the response text using the skill's provider-specific parsing method. Then display:
+After parsing the JSON, format and display the result as human-friendly text:
 
-```markdown
-[OK] Consultation Complete
+```
+Tool: {tool}, Model: {model}, Effort: {effort}, Duration: {duration_ms}ms.
 
-**Tool**: {name of tool used} ({model name used})
-**Effort**: {effort level}
-**Duration**: {duration_ms}ms
-
-### Response
-
-{the consulted tool's response text}
-
-### Session
-
-{for Claude/Gemini only: "Session: {session_id} - use `/consult --continue` to resume"}
+The results of the consultation are:
+{response}
 ```
 
+For continuable tools (Claude/Gemini), also display: `Session: {session_id} - use /consult --continue to resume`
+
 Save session state for continuable tools (Claude, Gemini) to `{AI_STATE_DIR}/consult/last-session.json`.
+
+Platform state directory:
+- Claude Code: `.claude/`
+- OpenCode: `.opencode/`
+- Codex CLI: `.codex/`
 
 On failure: `[ERROR] Consultation Failed: {specific error message}`
 
@@ -224,7 +229,7 @@ On failure: `[ERROR] Consultation Failed: {specific error message}`
 |-------|--------|
 | No question provided | `[ERROR] Usage: /consult "your question" [--tool=gemini\|codex\|claude\|opencode\|copilot] [--effort=low\|medium\|high\|max]` |
 | Tool not installed | `[ERROR] {tool} is not installed. Install with: {install command from skill}` |
-| Tool execution fails | `[ERROR] {tool} failed: {error}. Try a different tool with --tool=<other>` |
+| Tool execution fails | `[ERROR] {tool} failed: {error}. Try a different tool with --tool=[other]` |
 | Timeout (>120s) | `[ERROR] {tool} timed out after 120s. Try --effort=low for faster response` |
 | No tools available | `[ERROR] No AI CLI tools found. Install: npm i -g @anthropic-ai/claude-code` |
 | Session not found | `[WARN] No previous session found. Starting fresh consultation.` |

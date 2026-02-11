@@ -164,6 +164,11 @@ User-provided question text MUST NOT be interpolated into shell command strings.
 **Required approach -- pass question via stdin or temp file:**
 
 1. **Write the question** to a temporary file using the Write tool (e.g., `{AI_STATE_DIR}/consult/question.tmp`)
+
+   Platform state directory:
+   - Claude Code: `.claude/`
+   - OpenCode: `.opencode/`
+   - Codex CLI: `.codex/`
 2. **Build the command** using the temp file as input instead of inline text:
 
 | Provider | Safe command pattern |
@@ -205,7 +210,10 @@ After successful consultation, save to `{AI_STATE_DIR}/consult/last-session.json
 }
 ```
 
-`AI_STATE_DIR` uses the platform state directory. See State Files section in project memory for platform defaults.
+`AI_STATE_DIR` uses the platform state directory:
+- Claude Code: `.claude/`
+- OpenCode: `.opencode/`
+- Codex CLI: `.codex/`
 
 ### Load Session
 
@@ -231,10 +239,9 @@ See `consult-agent.md` for the complete redaction pattern table with replacement
 
 ## Output Format
 
-Return structured JSON between markers:
+Return a plain JSON object to stdout (no markers or wrappers):
 
-```
-=== CONSULT_RESULT ===
+```json
 {
   "tool": "gemini",
   "model": "gemini-3-pro-preview",
@@ -244,7 +251,6 @@ Return structured JSON between markers:
   "session_id": "abc-123",
   "continuable": true
 }
-=== END_RESULT ===
 ```
 
 ## Install Instructions
@@ -275,3 +281,5 @@ When a tool is not found, return these install commands:
 This skill is invoked by:
 - `consult-agent` for `/consult` command
 - Direct invocation: `Skill('consult', '"question" --tool=gemini --effort=high')`
+
+Example: `Skill('consult', '"Is this approach correct?" --tool=gemini --effort=high --model=gemini-3-pro')`

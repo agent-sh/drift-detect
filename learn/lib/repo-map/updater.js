@@ -13,32 +13,14 @@ const { execFileSync } = require('child_process');
 const runner = require('./runner');
 const cache = require('./cache');
 const installer = require('./installer');
+const { runWithConcurrency } = require('./concurrency');
 
 const SCAN_CONCURRENCY = 8;
+const SCANNABLE_EXTENSIONS = new Set(Object.values(runner.LANGUAGE_EXTENSIONS).flat());
 
-async function runWithConcurrency(items, limit, worker) {
-  if (!Array.isArray(items) || items.length === 0) {
-    return [];
-  }
-
-  const maxConcurrency = Math.max(1, Math.min(items.length, Math.floor(limit) || 1));
-  const results = new Array(items.length);
-  let cursor = 0;
-
-  async function runWorker() {
-    while (true) {
-      const index = cursor;
-      cursor += 1;
-      if (index >= items.length) {
-        return;
-      }
-      results[index] = await worker(items[index], index);
-    }
-  }
-
-  const workers = Array.from({ length: maxConcurrency }, () => runWorker());
-  await Promise.all(workers);
-  return results;
+function isScannableFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  return SCANNABLE_EXTENSIONS.has(ext);
 }
 
 /**
@@ -149,7 +131,7 @@ async function incrementalUpdate(basePath, map) {
   );
 
   // Process files that exist with bounded concurrency
-  const scanTargets = existenceChecks.filter(({ exists }) => exists);
+  const scanTargets = existenceChecks.filter(({ file, exists }) => exists && isScannableFile(file));
   const scanResults = await runWithConcurrency(scanTargets, SCAN_CONCURRENCY, async ({ file, fullPath }) => {
     const astErrors = [];
     const fileData = await runner.scanSingleFileAsync(installed.command, fullPath, basePath, {

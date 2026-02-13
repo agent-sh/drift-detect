@@ -14,57 +14,13 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { isDeepStrictEqual } = require('util');
 const { getStateDir } = require('../platform/state-dir');
 const { writeJsonAtomic } = require('../utils/atomic-write');
+const { isPlainObject, updatesApplied, sleepForRetry } = require('../utils/state-helpers');
 
 // File paths
 const TASKS_FILE = 'tasks.json';
 const FLOW_FILE = 'flow.json';
-const RETRY_SLEEP_STATE = typeof SharedArrayBuffer === 'function' && typeof Atomics === 'object' && typeof Atomics.wait === 'function'
-  ? new Int32Array(new SharedArrayBuffer(4))
-  : null;
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
-
-function hasUpdatedSubset(target, subset) {
-  if (!isPlainObject(subset)) {
-    return isDeepStrictEqual(target, subset);
-  }
-  if (!isPlainObject(target)) {
-    return false;
-  }
-
-  for (const [key, value] of Object.entries(subset)) {
-    if (!hasUpdatedSubset(target[key], value)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function updatesApplied(state, updates) {
-  if (!state) return false;
-
-  for (const [key, value] of Object.entries(updates || {})) {
-    if (key === '_version') continue;
-    if (!hasUpdatedSubset(state[key], value)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function sleepForRetry(ms) {
-  if (!RETRY_SLEEP_STATE || !Number.isFinite(ms) || ms <= 0) {
-    return;
-  }
-  Atomics.wait(RETRY_SLEEP_STATE, 0, 0, Math.floor(ms));
-}
-
 /**
  * Validate and resolve path to prevent path traversal attacks
  * @param {string} basePath - Base directory path

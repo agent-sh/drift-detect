@@ -4,8 +4,9 @@
  * @module lib/perf/profiling-runner
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const profilers = require('./profilers');
+const { parseCommand } = require('../utils/command-parser');
 
 /**
  * Run a profiling command and return artifacts/hotspots metadata.
@@ -16,6 +17,9 @@ const profilers = require('./profilers');
  */
 function runProfiling(options = {}) {
   const repoPath = options.repoPath || process.cwd();
+  const timeoutMs = Number.isFinite(options.timeoutMs)
+    ? Math.max(1, Math.floor(options.timeoutMs))
+    : 300000;
   const profiler = profilers.selectProfiler(repoPath);
 
   if (!profiler || typeof profiler.buildCommand !== 'function') {
@@ -27,14 +31,24 @@ function runProfiling(options = {}) {
     output: options.output,
     ...(options.profileOptions || {})
   });
+  const parsedCommand = parseCommand(command, 'Profiling command');
   const env = {
     ...process.env,
     ...(options.env || {})
   };
   try {
-    execSync(command, { stdio: 'pipe', env });
+    execFileSync(parsedCommand.executable, parsedCommand.args, {
+      stdio: 'pipe',
+      env,
+      cwd: repoPath,
+      timeout: timeoutMs,
+      windowsHide: true
+    });
   } catch (error) {
-    return { ok: false, error: error.message };
+    const stderr = error.stderr ? String(error.stderr).trim() : '';
+    const stdout = error.stdout ? String(error.stdout).trim() : '';
+    const details = stderr || stdout || error.message;
+    return { ok: false, error: `Profiling command failed: ${details}` };
   }
 
   const parsed = typeof profiler.parseOutput === 'function'
@@ -43,7 +57,7 @@ function runProfiling(options = {}) {
 
   const result = {
     tool: profiler.id,
-    command,
+    command: parsedCommand.display,
     hotspots: parsed.hotspots || [],
     artifacts: parsed.artifacts || []
   };

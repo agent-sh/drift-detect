@@ -31,6 +31,7 @@ Parse `$ARGUMENTS` using both explicit flags and natural language. Flags take pr
 3. `--effort=VALUE` where VALUE is one of: low, medium, high, max
 4. `--model-proposer=VALUE` (any string)
 5. `--model-challenger=VALUE` (any string)
+6. `--context=VALUE` where VALUE is: diff, file=PATH, or none (passed through to consult skill for each tool invocation)
 
 Remove matched flags from `$ARGUMENTS`.
 
@@ -138,6 +139,7 @@ Task:
     - rounds: [rounds]
     - model_proposer: [model or "auto"]
     - model_challenger: [model or "auto"]
+    - context: [context or "none"]
 
     Follow the debate skill templates. Display each round progressively.
     Deliver a verdict that picks a winner.

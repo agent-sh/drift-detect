@@ -2,7 +2,7 @@
 description: Master workflow orchestrator with autonomous task-to-production automation
 codex-description: 'Use when user asks to "find next task", "what should I work on", "automate workflow", "implement and ship", "run next-task". Orchestrates complete task-to-production workflow: discovery, implementation, review, and delivery.'
 argument-hint: "[filter] [--status] [--resume] [--abort] [--implement]"
-allowed-tools: Bash(git:*), Bash(gh:*), Bash(npm:*), Bash(node:*), Read, Write, Edit, Glob, Grep, Task, AskUserQuestion
+allowed-tools: Bash(git:*), Bash(gh:*), Bash(npm:*), Bash(node:*), Read, Write, Edit, Glob, Grep, Task, Skill, AskUserQuestion
 ---
 
 # /next-task - Master Workflow Orchestrator
@@ -521,9 +521,10 @@ workflowState.completePhase({ docsUpdated: true, fixesApplied: result.fixes?.len
 After docs update (sync-docs-agent) completes, invoke `ship:ship` explicitly:
 
 ```javascript
+workflowState.startPhase('shipping');
 console.log(`Task #${state.task.id} passed all validation. Invoking ship:ship...`);
 const stateDir = workflowState.getStateDir(); // Returns platform-aware state directory
-await Task({ subagent_type: "ship:ship", prompt: `Ship the task. State file: ${stateDir}/flow.json` });
+await Skill({ name: "ship:ship", args: `--state-file "${stateDir}/flow.json"` });
 ```
 
 **ship:ship responsibilities:**

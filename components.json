@@ -1,0 +1,11 @@
+{
+  "agents": [
+    "plan-synthesizer"
+  ],
+  "skills": [
+    "drift-analysis"
+  ],
+  "commands": [
+    "drift-detect"
+  ]
+}

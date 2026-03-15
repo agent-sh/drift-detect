@@ -17,6 +17,9 @@ You receive all collected data as structured JSON in the prompt:
 - `github`: Issues, PRs, milestones, categorized items, stale items, themes
 - `docs`: Documentation files analysis, checkboxes, features, plans, gaps
 - `code`: Directory structure, frameworks, test framework, health indicators, implemented features
+- `repoIntel`: Git history signals (may be null if agent-analyzer binary or map file is unavailable)
+  - `docDrift`: Doc files with low code coupling scores
+  - `areas`: Directory-level health assessments
 
 ## Your Unique Value
 
@@ -81,6 +84,13 @@ Look for signs of plan/reality divergence:
 - README describes features that don't exist
 - API docs don't match actual exports
 - CHANGELOG missing recent changes
+
+**Repo-Intel Signals** (when `repoIntel` is present):
+- `docDrift` entries with `codeCoupling: 0` are docs that never co-change with code - likely severely stale
+- `areas` entries with `health: "at-risk"` indicate directories with stale owners AND high bug-fix rates - these are the most dangerous drift zones
+- `areas` entries with `health: "needs-attention"` have one risk factor (stale ownership or elevated bug rate)
+- Stale areas often indicate abandoned planned work - cross-reference with documented phases and issues
+- High `bugFixRate` in an area suggests code churn that may have outpaced its documentation
 
 **Scope Drift:**
 - Many features documented but few implemented (overcommit)

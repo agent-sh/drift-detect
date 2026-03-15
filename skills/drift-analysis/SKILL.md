@@ -249,6 +249,45 @@ function featureMatch(docFeature, codeFeature) {
    - All security first, but don't ignore everything else
    - Mix quick wins with important work
 
+## Pre-check: Ensure Repo-Intel
+
+Before collecting data, check if the repo-intel map exists:
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+
+const cwd = process.cwd();
+const stateDir = ['.claude', '.opencode', '.codex']
+  .find(d => fs.existsSync(path.join(cwd, d))) || '.claude';
+const mapFile = path.join(cwd, stateDir, 'repo-intel.json');
+
+if (!fs.existsSync(mapFile)) {
+  const response = await AskUserQuestion({
+    questions: [{
+      question: 'Generate repo-intel?',
+      description: 'No repo-intel map found. Generating one enables doc-drift and area health analysis. Takes ~5 seconds.',
+      options: [
+        { label: 'Yes, generate it', value: 'yes' },
+        { label: 'Skip', value: 'no' }
+      ]
+    }]
+  });
+
+  if (response === 'yes' || response?.['Generate repo-intel?'] === 'yes') {
+    try {
+      const { binary } = require('@agentsys/lib');
+      const output = binary.runAnalyzer(['repo-intel', 'init', cwd]);
+      const stateDirPath = path.join(cwd, stateDir);
+      if (!fs.existsSync(stateDirPath)) fs.mkdirSync(stateDirPath, { recursive: true });
+      fs.writeFileSync(mapFile, output);
+    } catch (e) {
+      // Binary not available - proceed without
+    }
+  }
+}
+```
+
 ## Data Collection (JavaScript)
 
 The collectors.js module extracts data without LLM overhead:

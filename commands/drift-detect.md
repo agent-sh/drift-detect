@@ -129,6 +129,34 @@ ${collectedData.code?.summary?.totalDirs ? `- **Code**: ${collectedData.code.sum
 Send all collected data to plan-synthesizer for deep semantic analysis:
 
 ```javascript
+// Pre-fetch repo-intel signals if available
+let repoIntelContext = '';
+try {
+  const { binary } = require('@agentsys/lib');
+  const fs = require('fs');
+  const path = require('path');
+  const cwd = process.cwd();
+  const stateDir = ['.claude', '.opencode', '.codex'].find(d => fs.existsSync(path.join(cwd, d))) || '.claude';
+  const mapFile = path.join(cwd, stateDir, 'repo-intel.json');
+
+  if (fs.existsSync(mapFile)) {
+    const docDrift = JSON.parse(binary.runAnalyzer(['repo-intel', 'query', 'doc-drift', '--top', '20', '--map-file', mapFile, cwd]));
+    const areas = JSON.parse(binary.runAnalyzer(['repo-intel', 'query', 'areas', '--map-file', mapFile, cwd]));
+    const atRisk = areas.filter(a => a.health === 'at-risk' || a.health === 'needs-attention');
+
+    if (docDrift.length > 0 || atRisk.length > 0) {
+      repoIntelContext = '\n\nRepo-intel signals (use this data for drift analysis):';
+      if (docDrift.length > 0) {
+        const staleDocs = docDrift.filter(d => d.codeCoupling === 0).map(d => d.path);
+        if (staleDocs.length > 0) repoIntelContext += '\nDocs with zero code coupling (severely stale): ' + staleDocs.join(', ');
+      }
+      if (atRisk.length > 0) {
+        repoIntelContext += '\nAt-risk areas: ' + atRisk.map(a => `${a.area} (${a.health}, bugFixRate=${a.bugFixRate.toFixed(2)})`).join(', ');
+      }
+    }
+  }
+} catch (e) { /* unavailable */ }
+
 const analysisPrompt = `
 You are analyzing a project to identify drift between documented plans and actual implementation.
 
@@ -220,7 +248,7 @@ Things you can do right now:
 2. Update Phase Y status (not complete)
 3. Add test for [specific untested code]
 ```
-`;
+${repoIntelContext}`;
 
 await Task({
   subagent_type: "drift-detect:plan-synthesizer",

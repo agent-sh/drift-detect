@@ -16,7 +16,8 @@ Knowledge and patterns for analyzing project state, detecting plan drift, and cr
         ├─→ collectors.js (pure JavaScript)
         │   ├─ scanGitHubState()
         │   ├─ analyzeDocumentation()
-        │   └─ scanCodebase()
+        │   ├─ scanCodebase()
+        │   └─ getRepoIntelSignals()  (optional, via agent-analyzer binary)
         │
         └─→ plan-synthesizer (Opus)
             └─ Deep semantic analysis with full context
@@ -271,6 +272,10 @@ The collectors.js module extracts data without LLM overhead:
 - Test framework presence
 - Health indicators (CI, linting, tests)
 
+### Repo-Intel Data (optional - requires agent-analyzer binary and cached map file)
+- `docDrift`: Doc files with low code coupling (likely stale, never co-change with code)
+- `areas`: Directory-level health - owners, hotspot score, bug-fix rate, health status (healthy/needs-attention/at-risk)
+
 ## Semantic Analysis (Opus)
 
 The plan-synthesizer receives all collected data and performs:
@@ -299,6 +304,10 @@ The plan-synthesizer receives all collected data and performs:
   "code": {
     "frameworks": ["Express"],
     "health": { "hasTests": true, "hasCi": true }
+  },
+  "repoIntel": {
+    "docDrift": [{"path": "README.md", "codeCoupling": 0, "lastChanged": "2025-01-15", "changes": 5}],
+    "areas": [{"area": "src/auth/", "files": 8, "owners": [...], "hotspotScore": 3.2, "bugFixRate": 0.25, "health": "at-risk"}]
   }
 }
 ```

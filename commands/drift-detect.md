@@ -12,10 +12,11 @@ Perform deep repository analysis to identify drift between documented plans and 
 ## Architecture
 
 ```
-scan.md → collectors.js (pure JS) → plan-synthesizer (Opus) → report
-          ├─ scanGitHubState()      (single call with full context)
-          ├─ analyzeDocumentation()
-          └─ scanCodebase()
+collectors.js (pure JS) → plan-synthesizer (Opus) → report
+├─ scanGitHubState()      (single call with full context)
+├─ analyzeDocumentation()
+├─ scanCodebase()
+└─ getRepoIntelSignals()  (optional, requires repo-intel.json)
 ```
 
 Data collection is pure JavaScript (no LLM). Only semantic analysis uses Opus.

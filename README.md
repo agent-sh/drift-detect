@@ -12,9 +12,10 @@ The drift-detect plugin performs comprehensive analysis of your codebase to iden
 /drift-detect
         │
         ├─→ collectors.js (pure JavaScript)
-        │   ├─ scanGitHubState()     → issues, PRs, milestones
-        │   ├─ analyzeDocumentation() → docs, plans, checkboxes
-        │   └─ scanCodebase()        → structure, frameworks, health
+        │   ├─ scanGitHubState()       → issues, PRs, milestones
+        │   ├─ analyzeDocumentation()  → docs, plans, checkboxes
+        │   ├─ scanCodebase()          → structure, frameworks, health
+        │   └─ getRepoIntelSignals()   → doc-drift, area health (optional)
         │
         └─→ plan-synthesizer (Opus)
             └─ Deep semantic analysis with full context
@@ -105,6 +106,13 @@ Run a comprehensive reality check scan.
 - Test framework detection (Jest, Mocha, Vitest)
 - Health indicators (CI, linting, tests)
 - Implemented features
+
+### Repo-Intel (optional, auto-detected)
+- Doc files with low code coupling - likely stale documentation
+- Directory-level health: owners, hotspot score, bug-fix rate
+- At-risk and needs-attention areas for focused drift analysis
+
+**Requires**: `agent-analyzer` binary and a cached `repo-intel.json` map. If no map exists, the scan prompts to generate one (~5 seconds).
 
 ## Output
 

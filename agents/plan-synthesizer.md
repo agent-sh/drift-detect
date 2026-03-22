@@ -4,7 +4,7 @@ description: Perform deep semantic analysis on collected project data to identif
 tools:
   - Read
   - Write
-model: opus
+model: sonnet
 ---
 
 # Plan Synthesizer Agent

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+- Wire Phase 2-4 repo-intel data: query stale-docs for symbol-level doc staleness (replaces heuristic doc-drift) and project-info for language/CI/license context
+
+### Changed
+- Switch plan-synthesizer agent to Sonnet model (5x cheaper, same quality validated)
+
+### Fixed
+- Remove AUTO-GENERATED comment and redundant 'Be concise' instruction from AGENTS.md and CLAUDE.md (#13)
+
 ## [5.1.0] - 2026-03-16
 
 ### Added

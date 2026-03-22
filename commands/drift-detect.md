@@ -134,26 +134,36 @@ Send all collected data to plan-synthesizer for deep semantic analysis:
 let repoIntelContext = '';
 try {
   const { binary } = require('@agentsys/lib');
+  const { getStateDirPath } = require('@agentsys/lib/platform/state-dir');
   const fs = require('fs');
-  const path = require('path');
   const cwd = process.cwd();
-  const stateDir = ['.claude', '.opencode', '.codex'].find(d => fs.existsSync(path.join(cwd, d))) || '.claude';
-  const mapFile = path.join(cwd, stateDir, 'repo-intel.json');
+  const mapFile = require('path').join(getStateDirPath(cwd), 'repo-intel.json');
+  const q = (args) => { try { return JSON.parse(binary.runAnalyzer(args)); } catch { return null; } };
 
   if (fs.existsSync(mapFile)) {
-    const docDrift = JSON.parse(binary.runAnalyzer(['repo-intel', 'query', 'doc-drift', '--top', '20', '--map-file', mapFile, cwd]));
-    const areas = JSON.parse(binary.runAnalyzer(['repo-intel', 'query', 'areas', '--map-file', mapFile, cwd]));
-    const atRisk = areas.filter(a => a.health === 'at-risk' || a.health === 'needs-attention');
+    const docDrift = q(['repo-intel', 'query', 'doc-drift', '--top', '20', '--map-file', mapFile, cwd]);
+    const areas = q(['repo-intel', 'query', 'areas', '--map-file', mapFile, cwd]);
+    const staleDocs = q(['repo-intel', 'query', 'stale-docs', '--top', '20', '--map-file', mapFile, cwd]);
+    const projectInfo = q(['repo-intel', 'query', 'project-info', '--map-file', mapFile, cwd]);
+    const atRisk = (areas || []).filter(a => a.health === 'at-risk' || a.health === 'needs-attention');
 
-    if (docDrift.length > 0 || atRisk.length > 0) {
-      repoIntelContext = '\n\nRepo-intel signals (use this data for drift analysis):';
-      if (docDrift.length > 0) {
-        const staleDocs = docDrift.filter(d => d.codeCoupling === 0).map(d => d.path);
-        if (staleDocs.length > 0) repoIntelContext += '\nDocs with zero code coupling (severely stale): ' + staleDocs.join(', ');
-      }
-      if (atRisk.length > 0) {
-        repoIntelContext += '\nAt-risk areas: ' + atRisk.map(a => `${a.area} (${a.health}, bugFixRate=${a.bugFixRate.toFixed(2)})`).join(', ');
-      }
+    repoIntelContext = '\n\nRepo-intel signals (use this data for drift analysis):';
+
+    if (docDrift && docDrift.length > 0) {
+      const severelyStale = docDrift.filter(d => d.codeCoupling === 0).map(d => d.path);
+      if (severelyStale.length > 0) repoIntelContext += '\nDocs with zero code coupling (severely stale): ' + severelyStale.join(', ');
+    }
+    if (staleDocs && staleDocs.length > 0) {
+      repoIntelContext += '\nStale doc references (symbol-level):\n' +
+        staleDocs.map(s => `  ${s.doc}:${s.line} "${s.reference}" [${s.issue}] ${s.suggestion}`).join('\n');
+    }
+    if (atRisk.length > 0) {
+      repoIntelContext += '\nAt-risk areas: ' + atRisk.map(a => `${a.area} (${a.health}, bugFixRate=${a.bugFixRate.toFixed(2)})`).join(', ');
+    }
+    if (projectInfo) {
+      repoIntelContext += '\nProject: ' + (projectInfo.languages || []).map(l => l.language).join(', ');
+      if (projectInfo.ci) repoIntelContext += ' | CI: ' + projectInfo.ci.provider;
+      if (projectInfo.license) repoIntelContext += ' | License: ' + projectInfo.license;
     }
   }
 } catch (e) { /* unavailable */ }

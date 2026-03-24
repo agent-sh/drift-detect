@@ -15,6 +15,7 @@ disabled_rules = [
     "CC-SK-017",   # Intentional - version is a client-specific frontmatter field
     "XP-003",      # Intentional - lib/cross-platform/RESEARCH.md documents all platform paths
     "CC-MEM-004",  # npm validate referenced in auto-generated CLAUDE.md (agent-core template issue)
+    "CDX-AG-002",  # False positive - "Token efficiency" in AGENTS.md is not a secret
 ]
 
 [tool_versions]

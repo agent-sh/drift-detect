@@ -4,7 +4,7 @@ Deep repository analysis to realign project plans with actual code reality.
 
 ## Overview
 
-The drift-detect plugin performs comprehensive analysis of your codebase to identify drift between documented plans and actual implementation. It uses pure JavaScript for data collection (no LLM overhead) and a single Opus call for deep semantic analysis.
+The drift-detect plugin performs comprehensive analysis of your codebase to identify drift between documented plans and actual implementation. It uses pure JavaScript for data collection (no LLM overhead) and a single Sonnet call for deep semantic analysis.
 
 ## Architecture
 
@@ -17,18 +17,18 @@ The drift-detect plugin performs comprehensive analysis of your codebase to iden
         │   ├─ scanCodebase()          → structure, frameworks, health
         │   └─ getRepoIntelSignals()   → doc-drift, area health (optional)
         │
-        └─→ plan-synthesizer (Opus)
+        └─→ plan-synthesizer (Sonnet)
             └─ Deep semantic analysis with full context
 ```
 
 **Data collection**: No LLM calls - pure JavaScript
-**Semantic analysis**: Single Opus call with complete context
+**Semantic analysis**: Single Sonnet call with complete context
 **Token efficiency**: ~77% reduction vs. previous multi-agent architecture
 
 ## Features
 
 - **Efficient data collection**: JavaScript collectors for deterministic extraction
-- **Deep semantic analysis**: Single Opus call for cross-referencing and insights
+- **Deep semantic analysis**: Single Sonnet call for cross-referencing and insights
 - **Drift detection**: Identifies where plans have diverged from reality
 - **Gap analysis**: Finds missing tests, documentation, and implementation
 - **Priority ranking**: Context-aware prioritization
@@ -58,7 +58,7 @@ Run a comprehensive reality check scan.
 
 | Agent | Purpose | Model |
 |-------|---------|-------|
-| `plan-synthesizer` | Deep semantic analysis, drift detection, prioritization | opus |
+| `plan-synthesizer` | Deep semantic analysis, drift detection, prioritization | sonnet |
 
 ## Workflow
 
@@ -72,7 +72,7 @@ Run a comprehensive reality check scan.
         │   ├─ analyzeDocumentation()
         │   └─ scanCodebase()
         │
-        └─→ Single Opus Analysis Call
+        └─→ Single Sonnet Analysis Call
             ├─ Cross-reference docs vs code
             ├─ Identify drift patterns
             ├─ Find gaps

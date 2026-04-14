@@ -12,14 +12,14 @@ Perform deep repository analysis to identify drift between documented plans and 
 ## Architecture
 
 ```
-collectors.js (pure JS) → plan-synthesizer (Opus) → report
+collectors.js (pure JS) → plan-synthesizer (Sonnet) → report
 ├─ scanGitHubState()      (single call with full context)
 ├─ analyzeDocumentation()
 ├─ scanCodebase()
 └─ getRepoIntelSignals()  (optional, requires repo-intel.json)
 ```
 
-Data collection is pure JavaScript (no LLM). Only semantic analysis uses Opus.
+Data collection is pure JavaScript (no LLM). Only semantic analysis uses Sonnet.
 
 ## Arguments
 
@@ -40,12 +40,12 @@ if (!pluginRoot) { console.error('Error: Could not locate drift-detect plugin ro
 const collectors = require(`${pluginRoot}/lib/drift-detect/collectors.js`);
 const repoMap = require(`${pluginRoot}/lib/repo-map`);
 
-// Suggest repo-map if missing or stale
+// Suggest repo-intel if missing or stale
 const mapStatus = repoMap.status(process.cwd());
 if (!mapStatus.exists) {
-  console.log('Repo map not found. For faster, more accurate drift detection, run: /repo-map init');
+  console.log('Repo-intel map not found. For faster, more accurate drift detection, run: /repo-intel init');
 } else if (mapStatus.status?.staleness?.isStale) {
-  console.log('Repo map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-map update');
+  console.log('Repo-intel map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-intel update');
 }
 
 // Parse arguments
@@ -125,7 +125,7 @@ ${collectedData.code?.summary?.totalDirs ? `- **Code**: ${collectedData.code.sum
 `);
 ```
 
-## Phase 2: Semantic Analysis (Single Opus Call)
+## Phase 2: Semantic Analysis (Single Sonnet Call)
 
 Send all collected data to plan-synthesizer for deep semantic analysis:
 
@@ -300,7 +300,7 @@ Run \`/drift-detect --depth quick\` for faster subsequent scans.
 ## Success Criteria
 
 - Data collected via pure JavaScript (no LLM overhead)
-- Single Opus call for semantic analysis with full context
+- Single Sonnet call for semantic analysis with full context
 - Drift and gaps clearly identified with examples
 - Prioritized reconstruction plan produced
 - Report output per user settings

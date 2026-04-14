@@ -19,12 +19,12 @@ Knowledge and patterns for analyzing project state, detecting plan drift, and cr
         │   ├─ scanCodebase()
         │   └─ getRepoIntelSignals()  (optional, via agent-analyzer binary)
         │
-        └─→ plan-synthesizer (Opus)
+        └─→ plan-synthesizer (Sonnet)
             └─ Deep semantic analysis with full context
 ```
 
 **Data collection**: Pure JavaScript (no LLM overhead)
-**Semantic analysis**: Single Opus call with complete context
+**Semantic analysis**: Single Sonnet call with complete context
 
 ## Drift Detection Patterns
 
@@ -315,7 +315,7 @@ The collectors.js module extracts data without LLM overhead:
 - `docDrift`: Doc files with low code coupling (likely stale, never co-change with code)
 - `areas`: Directory-level health - owners, hotspot score, bug-fix rate, health status (healthy/needs-attention/at-risk)
 
-## Semantic Analysis (Opus)
+## Semantic Analysis (Sonnet)
 
 The plan-synthesizer receives all collected data and performs:
 

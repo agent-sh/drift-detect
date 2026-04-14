@@ -12,14 +12,14 @@ Perform deep repository analysis to identify drift between documented plans and 
 ## Architecture
 
 ```
-collectors.js (pure JS) → plan-synthesizer (Opus) → report
+collectors.js (pure JS) → plan-synthesizer (Sonnet) → report
 ├─ scanGitHubState()      (single call with full context)
 ├─ analyzeDocumentation()
 ├─ scanCodebase()
 └─ getRepoIntelSignals()  (optional, requires repo-intel.json)
 ```
 
-Data collection is pure JavaScript (no LLM). Only semantic analysis uses Opus.
+Data collection is pure JavaScript (no LLM). Only semantic analysis uses Sonnet.
 
 ## Arguments
 
@@ -125,7 +125,7 @@ ${collectedData.code?.summary?.totalDirs ? `- **Code**: ${collectedData.code.sum
 `);
 ```
 
-## Phase 2: Semantic Analysis (Single Opus Call)
+## Phase 2: Semantic Analysis (Single Sonnet Call)
 
 Send all collected data to plan-synthesizer for deep semantic analysis:
 
@@ -300,7 +300,7 @@ Run \`/drift-detect --depth quick\` for faster subsequent scans.
 ## Success Criteria
 
 - Data collected via pure JavaScript (no LLM overhead)
-- Single Opus call for semantic analysis with full context
+- Single Sonnet call for semantic analysis with full context
 - Drift and gaps clearly identified with examples
 - Prioritized reconstruction plan produced
 - Report output per user settings

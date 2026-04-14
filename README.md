@@ -28,7 +28,7 @@ The drift-detect plugin performs comprehensive analysis of your codebase to iden
 ## Features
 
 - **Efficient data collection**: JavaScript collectors for deterministic extraction
-- **Deep semantic analysis**: Single Opus call for cross-referencing and insights
+- **Deep semantic analysis**: Single Sonnet call for cross-referencing and insights
 - **Drift detection**: Identifies where plans have diverged from reality
 - **Gap analysis**: Finds missing tests, documentation, and implementation
 - **Priority ranking**: Context-aware prioritization

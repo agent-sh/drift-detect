@@ -40,12 +40,12 @@ if (!pluginRoot) { console.error('Error: Could not locate drift-detect plugin ro
 const collectors = require(`${pluginRoot}/lib/drift-detect/collectors.js`);
 const repoMap = require(`${pluginRoot}/lib/repo-map`);
 
-// Suggest repo-map if missing or stale
+// Suggest repo-intel if missing or stale
 const mapStatus = repoMap.status(process.cwd());
 if (!mapStatus.exists) {
-  console.log('Repo map not found. For faster, more accurate drift detection, run: /repo-map init');
+  console.log('Repo-intel map not found. For faster, more accurate drift detection, run: /repo-intel init');
 } else if (mapStatus.status?.staleness?.isStale) {
-  console.log('Repo map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-map update');
+  console.log('Repo-intel map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-intel update');
 }
 
 // Parse arguments

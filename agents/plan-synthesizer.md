@@ -20,6 +20,14 @@ You receive all collected data as structured JSON in the prompt:
 - `repoIntel`: Git history signals (may be null if agent-analyzer binary or map file is unavailable)
   - `docDrift`: Doc files with low code coupling scores
   - `areas`: Directory-level health assessments
+- `analyzer`: Structural code-fact signals (may be `{available: false, reason}` if the analyzer binary or map file is unavailable)
+  - `counts`: summary counts per category
+  - `orphanExports`: symbols exported but never imported (top 20)
+  - `passthroughWrappers`: single-call delegation functions (top 20)
+  - `alwaysTrueConditions`: `if (x == x)` / contradictions (top 20)
+  - `docDrift`: filtered doc-drift (versioned_docs/fixtures/generated excluded)
+  - `staleDocsSample`: per-doc per-line removed-symbol references (top 30)
+  - `entryPoints`: binaries, main() functions, framework configs
 
 ## Your Unique Value
 
@@ -91,6 +99,36 @@ Look for signs of plan/reality divergence:
 - `areas` entries with `health: "needs-attention"` have one risk factor (stale ownership or elevated bug rate)
 - Stale areas often indicate abandoned planned work - cross-reference with documented phases and issues
 - High `bugFixRate` in an area suggests code churn that may have outpaced its documentation
+
+**Analyzer Signals** (when `analyzer.available` is true, in addition to the above):
+
+These are the strongest "code drifted from plan" signals the analyzer exposes. They're structural facts about the code, not heuristics — if the analyzer says a symbol is unreachable, the symbol really is unreachable.
+
+- `analyzer.orphanExports` — symbols exported but never imported. Each entry you cross-reference with the plan has two interpretations:
+  - **Abandoned feature**: the plan described feature X, the code was started (symbol exists), but the wiring was never completed. Close the plan item or resume the work.
+  - **Scope-dropped, not cleaned up**: the feature was dropped but the code wasn't deleted. The plan says "doing X" but "doing X" is dead. Remove the symbol.
+  - Count orphans by plan-referenced area — a cluster in one area is a strong drift signal for that area.
+
+- `analyzer.passthroughWrappers` — functions that do nothing but forward to another call with identical args. These often accumulate when an abstraction was planned but never justified itself. Two drift interpretations:
+  - The plan documented a distinct layer/abstraction that in practice is a no-op shim — the abstraction didn't land.
+  - The plan was to inline some boundary but the wrappers were left behind. Flag for cleanup.
+
+- `analyzer.alwaysTrueConditions` — `if (x == x)`, `if x && !x`, etc. These are bugs or dead branches. If the plan documents conditional behavior for a feature but the code's condition is always-true or always-false, the feature is mis-implemented. Treat as a high-severity drift finding.
+
+- `analyzer.staleDocsSample` — inline-code references in docs where the symbol has been removed from the code. Same signal as doc-drift but scoped to specific line:reference pairs; useful for citing exact evidence.
+
+- `analyzer.docDrift` is already filtered against versioned-docs/fixtures/generated/CHANGELOG by the collector; trust the filtered list.
+
+- `analyzer.entryPoints` names every execution surface (Cargo `[[bin]]`, package.json bin, `main` fns, framework configs). Use this when judging whether an "undocumented export" is real drift — entry points are execution surfaces and don't need prose docs.
+
+**Severity mapping for analyzer findings:**
+
+- orphanExport + documented in plan → **high** (documented feature is dead)
+- orphanExport + documented in prose → **high** (doc is actively misleading)
+- passthroughWrapper + documented as distinct behavior → **medium**
+- alwaysTrueCondition in a feature path → **high** (feature is broken)
+- staleDocsSample on a plan-referenced file → **medium**
+- orphanExport without any doc mention → **low** (cleanup, not drift)
 
 **Scope Drift:**
 - Many features documented but few implemented (overcommit)

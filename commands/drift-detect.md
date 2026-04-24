@@ -51,7 +51,7 @@ if (!mapStatus.exists) {
 // Parse arguments
 const args = '$ARGUMENTS'.split(' ').filter(Boolean);
 const options = {
-  sources: ['github', 'docs', 'code'],
+  sources: ['github', 'docs', 'code', 'analyzer'],
   depth: 'thorough',
   output: 'both',
   file: 'drift-detect-report.md',
@@ -72,7 +72,7 @@ for (let i = 0; i < args.length; i++) {
 }
 
 // Validate options
-const allowedSources = ['github', 'docs', 'code'];
+const allowedSources = ['github', 'docs', 'code', 'analyzer'];
 const allowedDepths = ['quick', 'thorough'];
 const allowedOutputs = ['file', 'display', 'both'];
 

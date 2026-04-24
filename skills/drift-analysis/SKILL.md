@@ -315,6 +315,17 @@ The collectors.js module extracts data without LLM overhead:
 - `docDrift`: Doc files with low code coupling (likely stale, never co-change with code)
 - `areas`: Directory-level health - owners, hotspot score, bug-fix rate, health status (healthy/needs-attention/at-risk)
 
+### Analyzer Data (optional - requires agent-analyzer binary and cached map file)
+
+Structural code-fact signals from the slop-precision detectors. Summarized for the agent's context budget (top 20-30 of each category):
+
+- `orphanExports`: symbols exported but never imported - abandoned or scope-dropped features
+- `passthroughWrappers`: single-call delegation functions - often indicates an abstraction that didn't land
+- `alwaysTrueConditions`: `if (x == x)` / contradictions - bugs or dead branches
+- `docDrift`: doc files with low code coupling, already filtered against versioned_docs/fixtures/generated
+- `staleDocsSample`: per-doc per-line removed-symbol references - precise doc-drift evidence
+- `entryPoints`: binaries, main() functions, framework configs - execution surfaces that don't need prose docs
+
 ## Semantic Analysis (Sonnet)
 
 The plan-synthesizer receives all collected data and performs:
@@ -347,6 +358,16 @@ The plan-synthesizer receives all collected data and performs:
   "repoIntel": {
     "docDrift": [{"path": "README.md", "codeCoupling": 0, "lastChanged": "2025-01-15", "changes": 5}],
     "areas": [{"area": "src/auth/", "files": 8, "owners": [...], "hotspotScore": 3.2, "bugFixRate": 0.25, "health": "at-risk"}]
+  },
+  "analyzer": {
+    "available": true,
+    "counts": { "staleDocs": 42, "orphanExports": 3, "passthroughWrappers": 1, "alwaysTrueConditions": 0 },
+    "orphanExports": [{"action": {"path": "src/legacy.rs", "lines": [12, 25]}, "reason": "fn `legacyHandler` is exported but never imported", "confidence": 0.75}],
+    "passthroughWrappers": [{"action": {"path": "src/api.rs", "lines": [45, 48]}, "reason": "Rust `fn get_user(id)` is a single-call passthrough to `fetch_user` with identical args", "confidence": 0.85}],
+    "alwaysTrueConditions": [],
+    "docDrift": [],
+    "staleDocsSample": [{"doc": "README.md", "line": 42, "reference": "legacyHandler", "issue": "symbol-not-found"}],
+    "entryPoints": [{"path": "src/main.rs", "name": "main", "kind": "main"}]
   }
 }
 ```

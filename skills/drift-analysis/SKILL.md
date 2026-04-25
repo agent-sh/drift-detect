@@ -276,13 +276,15 @@ if (!fs.existsSync(mapFile)) {
 
   if (response === 'yes' || response?.['Generate repo-intel?'] === 'yes') {
     try {
-      const { binary } = require('@agentsys/lib');
+      const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
+      if (!pluginRoot) throw new Error('CLAUDE_PLUGIN_ROOT not set');
+      const { binary } = require(`${pluginRoot}/lib/agentsys`).get();
       const output = binary.runAnalyzer(['repo-intel', 'init', cwd]);
       const stateDirPath = path.join(cwd, stateDir);
       if (!fs.existsSync(stateDirPath)) fs.mkdirSync(stateDirPath, { recursive: true });
       fs.writeFileSync(mapFile, output);
     } catch (e) {
-      // Binary not available - proceed without
+      console.error(`[INFO] repo-intel init skipped: ${e.message}`);
     }
   }
 }

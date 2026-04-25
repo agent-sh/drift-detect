@@ -34,11 +34,11 @@ Example: `/drift-detect --sources github,docs --depth quick --output file`
 ## Phase 1: Parse Arguments and Collect Data
 
 ```javascript
-const { getPluginRoot } = require('@agentsys/lib/cross-platform');
-const pluginRoot = getPluginRoot('drift-detect');
-if (!pluginRoot) { console.error('Error: Could not locate drift-detect plugin root'); process.exit(1); }
+const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
+if (!pluginRoot) { console.error('Error: CLAUDE_PLUGIN_ROOT not set'); process.exit(1); }
 const collectors = require(`${pluginRoot}/lib/drift-detect/collectors.js`);
-const repoMap = require(`${pluginRoot}/lib/repo-map`);
+const { repoMap } = require(`${pluginRoot}/lib/agentsys`).get();
+if (!repoMap) { console.error('Error: agentsys repo-map module unavailable - install/update agentsys'); process.exit(1); }
 
 // Suggest repo-intel if missing or stale
 const mapStatus = repoMap.status(process.cwd());
@@ -133,18 +133,24 @@ Send all collected data to plan-synthesizer for deep semantic analysis:
 // Pre-fetch repo-intel signals if available
 let repoIntelContext = '';
 try {
-  const { binary } = require('@agentsys/lib');
-  const { getStateDirPath } = require('@agentsys/lib/platform/state-dir');
+  const pluginRoot2 = process.env.CLAUDE_PLUGIN_ROOT;
+  if (!pluginRoot2) throw new Error('CLAUDE_PLUGIN_ROOT not set');
+  const { repoIntel, libRoot } = require(`${pluginRoot2}/lib/agentsys`).get();
+  if (!repoIntel) throw new Error('agentsys is older than v5.8.6 (typed repo-intel queries unavailable) - run `/plugin marketplace update`');
+  const { getStateDirPath } = require(`${libRoot}/platform/state-dir`);
   const fs = require('fs');
   const cwd = process.cwd();
   const mapFile = require('path').join(getStateDirPath(cwd), 'repo-intel.json');
-  const q = (args) => { try { return JSON.parse(binary.runAnalyzer(args)); } catch { return null; } };
+  // Helper: never let a single query crash the whole context build.
+  const q = (fn) => { try { return fn(); } catch { return null; } };
 
   if (fs.existsSync(mapFile)) {
-    const docDrift = q(['repo-intel', 'query', 'doc-drift', '--top', '20', '--map-file', mapFile, cwd]);
-    const areas = q(['repo-intel', 'query', 'areas', '--map-file', mapFile, cwd]);
-    const staleDocs = q(['repo-intel', 'query', 'stale-docs', '--top', '20', '--map-file', mapFile, cwd]);
-    const projectInfo = q(['repo-intel', 'query', 'project-info', '--map-file', mapFile, cwd]);
+    const docDrift = q(() => repoIntel.queries.docDrift(cwd, { limit: 20 }));
+    const areas = q(() => repoIntel.queries.areas(cwd));
+    const staleDocs = q(() => repoIntel.queries.staleDocs(cwd, { limit: 20 }));
+    // project-info isn't in the typed wrapper yet - fall through to raw binary.
+    const { binary } = require(`${pluginRoot2}/lib/agentsys`).get();
+    const projectInfo = q(() => JSON.parse(binary.runAnalyzer(['repo-intel', 'query', 'project-info', '--map-file', mapFile, cwd])));
     const atRisk = (areas || []).filter(a => a.health === 'at-risk' || a.health === 'needs-attention');
 
     repoIntelContext = '\n\nRepo-intel signals (use this data for drift analysis):';
@@ -166,7 +172,7 @@ try {
       if (projectInfo.license) repoIntelContext += ' | License: ' + projectInfo.license;
     }
   }
-} catch (e) { /* unavailable */ }
+} catch (e) { console.error(`[INFO] repo-intel context skipped: ${e.message}`); }
 
 const analysisPrompt = `
 You are analyzing a project to identify drift between documented plans and actual implementation.

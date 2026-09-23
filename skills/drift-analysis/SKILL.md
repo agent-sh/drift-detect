@@ -1,7 +1,7 @@
 ---
 name: drift-analysis
 description: Use when the user asks about plan drift, reality check, comparing docs to code, project state analysis, roadmap alignment, implementation gaps, or needs guidance on identifying discrepancies between documented plans and actual implementation state.
-version: 5.1.0
+version: 5.2.0
 ---
 
 # Drift Analysis
@@ -263,6 +263,8 @@ const stateDir = ['.claude', '.opencode', '.codex']
 const mapFile = path.join(cwd, stateDir, 'repo-intel.json');
 
 if (!fs.existsSync(mapFile)) {
+  // Without AskUserQuestion (Codex, OpenCode, or a subagent): take 'Skip' and
+  // continue without repo-intel. Generating it is opt-in.
   const response = await AskUserQuestion({
     questions: [{
       question: 'Generate repo-intel?',

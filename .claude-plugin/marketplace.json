@@ -1,7 +1,7 @@
 {
   "name": "drift-detect",
   "description": "Deep repository analysis to realign project plans with code reality - detects drift, gaps, and creates prioritized reconstruction plans",
-  "version": "1.0.0",
+  "version": "5.2.0",
   "owner": {
     "name": "Avi Fenesh",
     "url": "https://github.com/avifenesh"
@@ -15,7 +15,7 @@
       "name": "drift-detect",
       "source": ".",
       "description": "Deep repository analysis to realign project plans with code reality - detects drift, gaps, and creates prioritized reconstruction plans",
-      "version": "1.0.0",
+      "version": "5.2.0",
       "category": "productivity"
     }
   ]

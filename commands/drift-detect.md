@@ -43,9 +43,9 @@ if (!repoMap) { console.error('Error: agentsys repo-map module unavailable - ins
 // Suggest repo-intel if missing or stale
 const mapStatus = repoMap.status(process.cwd());
 if (!mapStatus.exists) {
-  console.log('Repo-intel map not found. For faster, more accurate drift detection, run: /repo-intel init');
+  console.log('Repo-intel map not found. Drift detection runs without it; with the repo-intel plugin installed, /repo-intel init adds symbol-level doc drift.');
 } else if (mapStatus.status?.staleness?.isStale) {
-  console.log('Repo-intel map is stale (' + mapStatus.status.staleness.reason + '). Consider: /repo-intel update');
+  console.log('Repo-intel map is stale (' + mapStatus.status.staleness.reason + '). Refresh it with /repo-intel update if the repo-intel plugin is installed.');
 }
 
 // Parse arguments
@@ -252,7 +252,7 @@ Output SPECIFIC actions, not generic advice:
 - [ ] [Specific missing item 2]
 
 ## Release Blockers
-If you're planning to ship soon, these MUST be addressed:
+If you're planning to ship soon, address these first:
 1. [Specific blocker with file/issue reference]
 2. [Specific blocker with file/issue reference]
 
@@ -267,6 +267,8 @@ Things you can do right now:
 ```
 ${repoIntelContext}`;
 
+// Without Task (Codex, OpenCode): run analysisPrompt in this session, following
+// agents/plan-synthesizer.md, and print the report it produces.
 await Task({
   subagent_type: "drift-detect:plan-synthesizer",
   prompt: analysisPrompt,

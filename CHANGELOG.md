@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [5.3.0] - 2026-09-24
+
+### Added
+- `scripts/collect.js` runs the data collection the command used to describe as inline JavaScript: flag validation, GitHub, docs, code and analyzer collectors, repo-intel area health and project info. It writes one JSON file to `<stateDir>/drift-detect-data.json` and prints a line per source. The command's allowed tools had no `node`, so the old block could not run as written.
+- `tests/collect.test.js`, wired into `npm test`.
+
+### Changed
+- Rewrote the command, `plan-synthesizer` and the `drift-analysis` skill for current models: goal, constraints with reasons, done, and one report format instead of three different ones.
+- Analyzer data now reaches the synthesizer. The old prompt passed only `github`, `docs` and `code`, so the analyzer signals the agent was told to read were never in its input.
+- `plan-synthesizer` gets Glob and Grep and checks each claim in the code before making it. It stays on `sonnet`.
+- Reference material (data keys, analyzer signals, severity guide, report layout) moved to `skills/drift-analysis/references/`. The priority-score formula and the fuzzy-match code are gone; the model weighs priority from the severity guide.
+- The skill no longer asks to generate a repo-intel map; the collector notes when one is missing or stale.
+
 ## [5.2.0] - 2026-09-23
 
 ### Added

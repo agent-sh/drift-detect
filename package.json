@@ -1,6 +1,6 @@
 {
   "name": "@agentsys/drift-detect",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "Deep repository analysis to realign project plans with actual code reality - discovers drift, gaps, and produces prioritized reconstruction plans",
   "author": {
     "name": "Avi Fenesh",
@@ -24,7 +24,7 @@
     "project-management"
   ],
   "scripts": {
-    "test": "node -e \"require('./lib')\"",
+    "test": "node -e \"require('./lib')\" && node --test tests/*.test.js",
     "validate": "node -e \"require('./lib')\""
   }
 }

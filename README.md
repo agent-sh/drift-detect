@@ -11,11 +11,11 @@ The drift-detect plugin performs comprehensive analysis of your codebase to iden
 ```
 /drift-detect
         │
-        ├─→ collectors.js (pure JavaScript)
+        ├─→ scripts/collect.js (pure JavaScript, writes one JSON file)
         │   ├─ scanGitHubState()       → issues, PRs, milestones
         │   ├─ analyzeDocumentation()  → docs, plans, checkboxes
         │   ├─ scanCodebase()          → structure, frameworks, health
-        │   └─ getRepoIntelSignals()   → doc-drift, area health (optional)
+        │   └─ analyzer + repo-intel   → structural facts, area health (optional)
         │
         └─→ plan-synthesizer (Sonnet)
             └─ Deep semantic analysis with full context
@@ -49,7 +49,7 @@ Run a comprehensive reality check scan.
 
 | Flag | Values | Default | Description |
 |------|--------|---------|-------------|
-| `--sources` | github,docs,code | all three | Which sources to scan |
+| `--sources` | github,docs,code,analyzer | all four | Which sources to scan |
 | `--depth` | quick, thorough | thorough | How deep to analyze |
 | `--output` | file, display, both | both | Where to output results |
 | `--file` | path | drift-detect-report.md | Output file path |
@@ -112,7 +112,7 @@ Run a comprehensive reality check scan.
 - Directory-level health: owners, hotspot score, bug-fix rate
 - At-risk and needs-attention areas for focused drift analysis
 
-**Requires**: `agent-analyzer` binary and a cached `repo-intel.json` map. If no map exists, the scan prompts to generate one (~5 seconds).
+**Requires**: `agent-analyzer` binary and a cached `repo-intel.json` map. If no map exists, the scan says so and continues; `/repo-intel init` creates one.
 
 ## Output
 

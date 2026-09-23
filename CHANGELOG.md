@@ -2,10 +2,15 @@
 
 ## [Unreleased]
 
+## [5.2.0] - 2026-09-23
+
 ### Added
 - Wire Phase 2-4 repo-intel data: query stale-docs for symbol-level doc staleness (replaces heuristic doc-drift) and project-info for language/CI/license context
 
 ### Changed
+- Harnesses without AskUserQuestion (Codex, OpenCode) skip the repo-intel generation prompt and continue; without Task, the synthesis prompt runs in the current session.
+- The missing-map hint no longer assumes the repo-intel plugin is installed.
+- Release-blocker line in the report template drops the all-caps MUST.
 - Switch plan-synthesizer agent to Sonnet model (5x cheaper, same quality validated)
 
 ### Fixed

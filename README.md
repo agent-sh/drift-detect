@@ -183,3 +183,12 @@ Provides knowledge for:
 ## License
 
 MIT
+
+## Contributor instructions
+
+Repository instructions live in AGENTS.md. Use Claude Code v2.1.281 or later
+for native loading across supported providers. If an ancestor instruction file
+masks AGENTS.md, select `claude-md-and-agents-md` in the user-level Project
+instructions setting. This repository policy does not change the plugin's
+support for analyzing either instruction format in other projects.
+See [Claude Code instruction loading](https://code.claude.com/docs/en/memory#agents-md).

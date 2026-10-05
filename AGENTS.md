@@ -2,6 +2,20 @@
 
 > Deep repository analysis to realign project plans with actual code reality - discovers drift, gaps, and produces prioritized reconstruction plans
 
+## Overview
+
+An agentsys plugin: the `/drift-detect` command, the `plan-synthesizer` agent and the `drift-analysis` skill (with `skills/drift-analysis/references/signals.md` and `skills/drift-analysis/references/output-template.md`) are Markdown prompts. `scripts/collect.js` does the data collection the command runs, covered by `tests/collect.test.js`. `lib/` is synced from [agent-core](https://github.com/agent-sh/agent-core); change shared code there, since a local edit is overwritten by the next sync PR.
+
+## Conventions
+
+- Output is plain text with the status markers `[OK]`, `[ERROR]`, `[WARN]`, `[CRITICAL]`, and no emojis or ASCII art. People read it in terminals and other plugins parse it.
+- In prose, write a spaced single dash (` - `), not ` -- ` or an em dash.
+- Put summaries, plans and audit notes in the PR or issue, not in committed files: committed notes go stale.
+- Changes reach main through a PR. A feature or fix is done when tests that cover it pass.
+- Keep git hooks on. `scripts/setup-hooks.sh` installs a pre-push hook that runs `npm test`.
+- When a script or tool fails, report the failure before working around it, so the tool gets fixed.
+- When goals conflict, rank them: plugin users' experience, automation that needs no babysitting, token cost, output quality, simplicity.
+
 ## Agents
 
 - plan-synthesizer
@@ -14,50 +28,15 @@
 
 - drift-detect
 
-## Critical Rules
-
-1. **Plain text output** - No emojis, no ASCII art. Use `[OK]`, `[ERROR]`, `[WARN]`, `[CRITICAL]` for status markers.
-2. **No unnecessary files** - Don't create summary files, plan files, audit files, or temp docs.
-3. **Task is not done until tests pass** - Every feature/fix must have quality tests.
-4. **Create PRs for non-trivial changes** - No direct pushes to main.
-5. **Always run git hooks** - Never bypass pre-commit or pre-push hooks.
-6. **Use single dash for em-dashes** - In prose, use ` - ` (single dash with spaces), never ` -- `.
-7. **Report script failures before manual fallback** - Never silently bypass broken tooling.
-8. **Token efficiency** - Save tokens over decorations.
-
-## Model Selection
-
-| Model | When to Use |
-|-------|-------------|
-| **Opus** | Complex reasoning, analysis, planning |
-| **Sonnet** | Validation, pattern matching, most agents |
-| **Haiku** | Mechanical execution, no judgment needed |
-
-## Core Priorities
-
-1. User DX (plugin users first)
-2. Worry-free automation
-3. Token efficiency
-4. Quality output
-5. Simplicity
-
-## Dev Commands
+## Dev commands
 
 ```bash
-npm test          # Run tests
-npm run validate  # All validators
+npm test                        # loads lib/, then the node:test suite
+npm run validate                # loads lib/ only
+agnix --config .agnix.toml .    # agent config lint, also run in CI
 ```
 
 ## References
 
 - Part of the [agentsys](https://github.com/agent-sh/agentsys) ecosystem
 - https://agentskills.io
-
-## Validation scope
-
-Choose checks that cover the changed behavior. For CPU-only tooling, documentation
-and configuration changes, run the relevant CPU tests, static checks and configuration
-validation. Do not require a blanket GPU gate for those changes. Require GPU
-qualification when GPU, runtime or model behavior, or related claims, change.
-Preserve applicable native, model and hardware qualification gates. CPU checks do
-not qualify GPU behavior.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [5.4.0] - 2026-10-06
+
 ### Changed
 - AGENTS.md: dropped the generic model-selection table and the GPU validation text (this is a Markdown and Node plugin), stated the conventions once with their reasons, added an Overview and the agnix command CI runs. The command, agent and skill are unchanged; they were rewritten for current models in 5.3.0.
 
